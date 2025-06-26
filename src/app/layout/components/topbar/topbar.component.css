@@ -1,0 +1,13 @@
+:host ::ng-deep .p-overlaybadge .p-badge {
+    outline-width: 0px;
+}
+::ng-deep .pi.pi-clock {
+  color: #9dc1eb; /* o cualquier color */
+}
+
+.custom-input {
+  background-color: #1565c0; /* o cualquier color */
+}
+
+
+

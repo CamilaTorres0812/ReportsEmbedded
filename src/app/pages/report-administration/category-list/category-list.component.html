@@ -1,0 +1,8 @@
+<div class="flex flex-column gap-1">
+    <label for="category">Categoría *</label>
+    <p-select [options]="hijos" [(ngModel)]="hijoSeleccionado" optionLabel="DESCRIPCION" placeholder="Seleccione" (onChange) = "hijoSeleccionadoEvent()" [appendTo]="'body'" [ngClass]="showError && showError.error && !hijoSeleccionado ? 'ng-invalid ng-dirty' : ''"/>
+    <p-message *ngIf = "showError && showError.error && !hijoSeleccionado" severity="error" variant="simple" size="small">{{showError.message}}</p-message>
+</div>
+
+
+<app-category-list *ngIf="hijoSeleccionado && hijoSeleccionado.CATEGORIA.length>0" [hijos]="hijoSeleccionado.CATEGORIA" (emitirListaCategorias)="hijoEmitido($event)" [showError]="showError"></app-category-list>

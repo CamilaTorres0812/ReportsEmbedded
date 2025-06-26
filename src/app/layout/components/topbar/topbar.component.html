@@ -1,0 +1,54 @@
+<div class="layout-topbar-start">
+    <a class="layout-topbar-logo" routerLink="/">
+        <img id="app-logo" [src]="imageUrl" alt="ultima-layout" style="height: 2.25rem">
+    </a>
+    <a #menuButton class="layout-menu-button" (click)="onMenuButtonClick()">
+        <i class="pi pi-chevron-right"></i>
+    </a>
+
+    <a #mobileMenuButton class="layout-topbar-mobile-button" (click)="onTopbarMenuToggle()">
+        <i class="pi pi-ellipsis-v"></i>
+    </a>
+    </div>
+
+    <div class="layout-topbar-end">
+    <div class="layout-topbar-actions-start">
+        <div class="flex flex-row items-center justify-between p-3 gap-1">
+            <p-iftalabel>
+            <p-iconfield>
+                <p-inputicon class="pi pi-clock" />
+                <p-inputnumber class="transparent-input" [(ngModel)]="timerValue" inputId="Timer" [min]="60" />
+            </p-iconfield>
+            <label for="timer">Timer (seconds)</label>
+        </p-iftalabel>
+        
+            <p-button  [icon]="reproduce ? 'pi pi-pause' : 'pi pi-play'" [severity]="reproduce ? 'danger' : 'success'" (click)="cambiarBoton()"/>
+            <button *ngIf="reproduce"  class="app-config-button" (click)="op.toggle($event)">
+                <i class="pi pi-clock"></i>
+            </button>
+            <p-popover #op>
+                <span>{{message}}</span>
+            </p-popover>
+        </div>
+    </div>
+    <p>Versión: 25.05.29.0</p>
+    <div class="layout-topbar-actions-end">
+        <ul class="layout-topbar-items">
+            <li>
+                <a pStyleClass="@next" enterFromClass="hidden" enterActiveClass="animate-scalein" leaveToClass="hidden" leaveActiveClass="animate-fadeout" [hideOnOutsideClick]="true">
+                    <img src="./images/avatar/icons8-male-user-48.png" alt="avatar" class="w-12 h-10" />
+                </a>
+                <div class="hidden">
+                    <ul class="list-none p-0 m-0">
+                        <li (click) = "finSesion()">
+                            <a class="cursor-pointer flex items-center hover:bg-emphasis duration-150 transition-all px-4 py-2" pRipple>
+                                <i class="pi pi-power-off mr-2"></i>
+                                <span>Logout</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,83 @@
+<div class="flex align-items-center gap-3 border-bottom-1 surface-border pb-3 w-full">
+    <div class="flex align-items-center gap-2">
+    <div class="w-3rem h-3rem bg-yellow-300 border-round border-1 border-yellow-700 flex align-items-center justify-content-center">
+        <i class="pi pi-chart-bar text-xl text-yellow-700"></i>
+    </div>
+    <div>
+        <h3 class="m-0 text-xl font-bold text-gray-800" *ngIf="!isEdit">Nuevo Reporte Power BI</h3>
+        <h3 class="m-0 text-xl font-bold text-gray-800" *ngIf="isEdit">Editar Reporte Power BI</h3>
+        <p class="m-0 text-sm text-color-secondary">Configura tu reporte personalizado</p>
+    </div>
+    </div>
+</div>
+
+<div class="w-full">
+    <div class="flex flex-column gap-1 mb-3">
+        <label for="nombre">Nombre del Reporte *</label>
+        <input id="nombre" pInputText  placeholder="Ej: Reporte de Inventario" [(ngModel)]="nuevoReporte.nombre" [ngClass]="validations.name.error && !nuevoReporte.nombre ? 'ng-invalid ng-dirty' : ''"/>
+        <p-message *ngIf = "validations.name.error && !nuevoReporte.nombre" severity="error" variant="simple" size="small">{{validations.name.message}}</p-message>
+    </div>
+    <div class="flex flex-column gap-1 mb-3">
+        <label for="descripcion">Descripción *</label>
+        <textarea id="descripcion" pTextarea  rows="3" placeholder="Descripción detallada del reporte..." [(ngModel)]="nuevoReporte.descripcion" [ngClass]="validations.description.error && !nuevoReporte.descripcion ? 'ng-invalid ng-dirty' : ''"></textarea>
+        <p-message *ngIf = "validations.description.error && !nuevoReporte.descripcion" severity="error" variant="simple" size="small">{{validations.description.message}}</p-message>
+    </div>
+    <div class="mb-3">
+        <app-category-list [hijos]="clasificacion" [inputSeleccionados]="inputReporteAdicionales" [showError] = "validations.category" (emitirListaCategorias)="getListaCategorias($event)" ></app-category-list>
+   </div>
+   <div class="mb-3">
+        <div class="format flex gap-2 mb-3">
+            <i class="pi pi-exclamation-circle text-yellow-800" style="font-size: 1.5rem"></i>
+            <p class="text-yellow-800">En caso de dejar los campos Client ID y Secret ID en blanco, el sistema asignará automáticamente valores predeterminados. Completa estos campos solo si deseas utilizar credenciales personalizadas.</p>
+    </div>
+    </div>
+    <div class="grid mb-3">
+        <div class="col-6">
+            <div class="flex flex-column gap-1">
+                <label for="clientId">Client Id </label>
+                <input id="clientId" pInputText  placeholder="Client ID del reporte" [(ngModel)]="nuevoReporte.clientId" />
+            </div>
+        </div>
+        <div class="col-6 ">
+            <div class="flex flex-column gap-1 ">
+                <label for="clientSecret">Client Secret </label>
+                <input id="clientSecret" pInputText  placeholder="Client Secret del reporte" [(ngModel)]="nuevoReporte.clientSecret"/>
+            </div>
+        </div>
+        <div class="col-6 ">
+            <div class="flex flex-column gap-1 ">
+                <label for="groupId">Group Id *</label>
+                <input id="groupId" pInputText  placeholder="Group ID del reporte" [(ngModel)]="nuevoReporte.groupId" [ngClass]="validations.groupId.error && !nuevoReporte.groupId ? 'ng-invalid ng-dirty' : ''"/>
+                <p-message *ngIf = "validations.groupId.error && !nuevoReporte.groupId" severity="error" variant="simple" size="small">{{validations.groupId.message}}</p-message>
+            </div>
+        </div>
+        <div class="col-6 ">
+            <div class="flex flex-column gap-1">
+                <label for="reportId">Report Id *</label>
+                <input id="reportId" pInputText  placeholder="Report ID del reporte" [(ngModel)]="nuevoReporte.reportId" [ngClass]="validations.reportId.error && !nuevoReporte.reportId ? 'ng-invalid ng-dirty' : ''"/>
+                <p-message *ngIf = "validations.reportId.error && !nuevoReporte.reportId" severity="error" variant="simple" size="small">{{validations.reportId.message}}</p-message>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- Botón Guardar -->
+<div class="flex justify-content-end">
+    <button
+        pButton
+        *ngIf="!isEdit"
+        label="Guardar Reporte Power BI"
+        class="p-button bg-yellow-300 border-yellow-500 text-yellow-800 border-1 border-yellow-800"
+        icon="pi pi-save"
+        (click) = "crearReporteClick()"
+    ></button>
+     <button
+        pButton
+        *ngIf="isEdit"
+        label="Editar Reporte Power BI"
+        class="p-button bg-yellow-300 border-yellow-500 text-yellow-800 border-1 border-yellow-800"
+        icon="pi pi-pen-to-square"
+        (click)="editarReporteClick()"
+        [disabled] = "!isEdit"
+    ></button>
+</div> 
+

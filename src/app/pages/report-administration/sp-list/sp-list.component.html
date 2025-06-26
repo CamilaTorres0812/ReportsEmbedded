@@ -1,0 +1,6 @@
+<div class="flex flex-column gap-1">
+    <label for="dataSource">Fuente de Datos *</label>
+    <p-multiselect [options]="storedProcedures" [(ngModel)]="selectStoreProcedures" placeholder="Seleccione" optionLabel="Nombre" display="chip" (onChange)="storedChange()" [appendTo]="'body'" [ngClass]="showError.error && selectStoreProcedures.length <= 0  ? 'ng-invalid ng-dirty' : ''"/>
+    <p-message *ngIf = "showError.error && selectStoreProcedures.length <= 0" severity="error" variant="simple" size="small">{{showError.message}}</p-message>
+</div> 
+

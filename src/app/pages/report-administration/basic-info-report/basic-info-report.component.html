@@ -1,0 +1,42 @@
+<div class="flex align-items-center gap-3 border-bottom-1 border-300  pb-3 w-full mb-3">
+    <div class="flex align-items-center gap-2">
+    <div class="w-3rem h-3rem border-round flex align-items-center justify-content-center" [ngClass]="tipoReporte === 'PBI' ? 'bg-yellow-500' : 'bg-blue-500'">
+        <i class="pi pi-file text-white text-xl" *ngIf="tipoReporte !== 'PBI'"></i>
+        <i class="pi pi-chart-bar text-white text-xl" *ngIf="tipoReporte === 'PBI'"></i>
+    </div>
+    <div>
+        <h3 class="m-0 text-xl font-bold text-gray-800" *ngIf="!isEdit && tipoReporte !== 'PBI'">Nuevo Reporte Stimulsoft</h3>
+        <h3 class="m-0 text-xl font-bold text-gray-800" *ngIf="isEdit && tipoReporte !== 'PBI'">Editar Reporte Stimulsoft</h3>
+        <h3 class="m-0 text-xl font-bold text-gray-800" *ngIf="!isEdit && tipoReporte === 'PBI'">Nuevo Reporte Power BI</h3>
+        <h3 class="m-0 text-xl font-bold text-gray-800" *ngIf="isEdit && tipoReporte === 'PBI'">Editar Reporte Power BI</h3>
+        <p class="m-0 text-sm text-color-secondary">Configura tu reporte personalizado</p>
+    </div>
+    </div>
+</div>
+
+
+<div class="flex flex-column gap-1 mb-3">
+    <label for="nombre">Nombre del Reporte *</label>
+    <input id="nombre" pInputText  placeholder="Ej: Reporte de Inventario" [(ngModel)]="nuevoReporte.nombre" [ngClass]="validations.name.error && !nuevoReporte.nombre ? 'ng-invalid ng-dirty' : ''"/>
+    <p-message *ngIf = "validations.name.error && !nuevoReporte.nombre" severity="error" variant="simple" size="small">{{validations.name.message}}</p-message>
+</div>
+<div class="flex flex-column gap-1 mb-3">
+    <label for="descripcion">Descripción *</label>
+    <textarea id="descripcion" pTextarea  rows="3" placeholder="Descripción detallada del reporte..." [(ngModel)]="nuevoReporte.descripcion" [ngClass]="validations.description.error && !nuevoReporte.descripcion ? 'ng-invalid ng-dirty' : ''"></textarea>
+    <p-message *ngIf = "validations.description.error && !nuevoReporte.descripcion" severity="error" variant="simple" size="small">{{validations.description.message}}</p-message>
+</div>
+<div class="grid mb-3">
+    <div class="col-6" *ngIf="clasificacion">
+        <app-category-list [hijos]="clasificacion" [inputSeleccionados]="inputReporteAdicionales" [showError] = "validations.category" (emitirListaCategorias)="getListaCategorias($event)" ></app-category-list>
+    </div>
+    <div class="col-6">
+        <app-sp-list [idKatios]="idKatios" [inputStored]="nuevoReporte.storedProcedure" [showError] = "validations.storeProcedure" (storedSeleccionado)="storedChange($event)"></app-sp-list> 
+    </div>               
+</div>
+
+<!--<ng-container [ngSwitch]="val.CAMPO">
+    <app-add-stimulsfot-report></app-add-stimulsfot-report>
+</ng-container>-->
+
+
+

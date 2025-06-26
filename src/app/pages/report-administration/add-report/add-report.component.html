@@ -1,0 +1,25 @@
+
+<p-button label="Add" icon="pi pi-plus-circle" severity="success" (click)="showAddDialog()"/>
+<p-dialog [style]="{ width: '70rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [modal]="true" [(visible)]="visible">
+    <ng-template #header>
+        <div class="inline-flex items-center justify-center gap-2">
+            <i class="pi pi-file-plus" style="font-size: 1.5rem; color: var(--primary-color)"></i>
+            <h4 class="text-xl font-semibold text-primary">Añadir Reporte</h4>
+        </div>
+    </ng-template>
+    <p-tabs [(value)]="selectedTab" (onChange)="changeTab()">
+        <p-tablist>
+            <p-tab value="STI">Stimulsoft</p-tab>
+            <p-tab value="PBI">Power BI</p-tab>
+        </p-tablist>
+        <p-tabpanels>
+            <p-tabpanel value="STI">
+                    <app-add-stimulsfot-report [idKatios] = "idKatios" (addReport) = "addNewReport()"></app-add-stimulsfot-report>
+            </p-tabpanel>
+            <p-tabpanel value="PBI">
+                <app-add-powerbi-report [idKatios] = "idKatios" (addReport) = "addNewReport()"></app-add-powerbi-report>
+            </p-tabpanel>
+        </p-tabpanels>
+    </p-tabs>
+</p-dialog>
+

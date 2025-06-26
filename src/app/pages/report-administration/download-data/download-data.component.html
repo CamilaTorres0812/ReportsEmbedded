@@ -1,0 +1,14 @@
+<p-button label="Download" icon="pi pi-download" (click)="showAddDialog()"/>
+<p-dialog header="Generar Data" [modal]="true" [(visible)]="visible" [style]="{ width: '50rem' }">
+    <p-message *ngIf = "visible" size="small" severity="info" icon="pi pi-exclamation-circle">
+           <p><b>Formato de descarga: </b>
+             Los datos se descargarán en formato {{formatoArchivo}} para facilitar la integración con Stimulsoft Reports.</p>
+    </p-message>
+    <app-sp-list [idKatios] = "idKatios" (storedSeleccionado) = "storedChange($event)" [showError] = "validations.storeProcedure"></app-sp-list>
+    <div *ngIf="jsonAtributos && objectKeys(jsonAtributos).length > 0" class="mt-3 border-round-lg border-1 border-solid border-gray-300 p-3 ">
+        <h3 class="text-xl font-semibold">Parámetros</h3>
+        <app-validaciones-sti [IDKatios]="idKatios" [validaciones]="jsonAtributos"
+            (crearProcesoEA)="ejecutarStored($event)">
+        </app-validaciones-sti>
+    </div>
+</p-dialog>

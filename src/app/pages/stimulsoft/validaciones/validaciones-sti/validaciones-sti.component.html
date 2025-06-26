@@ -1,0 +1,39 @@
+
+<div *ngFor="let val of validaciones">
+    <div class="field grid">
+            <ng-container [ngSwitch]="val.CAMPO">
+                <label [for]="val.NOMBRE" class="col-12 mb-2 md:col-2 md:mb-0">{{val.NOMBRE}}</label>
+                <div class="col-12 md:col-10">
+                    <input *ngSwitchCase="'TEXT'" type="text" pInputText [id]="val.NOMBRE" [(ngModel)]="val.VALOR" [disabled]="val.DISABLED == 1" class="w-full"/>
+                    <p-datepicker *ngSwitchCase="'DATE'" [id]="val.NOMBRE" [showIcon]="true" [(ngModel)]="val.VALOR" [disabled]="val.DISABLED == 1"
+                        dateFormat="yy-mm-dd"  [appendTo]="'body'"></p-datepicker>
+                    <p-inputnumber *ngSwitchCase="'NUMERIC'" [(ngModel)]="val.VALOR" [inputId]="val.NOMBRE" [useGrouping]="false" [disabled]="val.DISABLED == 1" class="w-full"/>
+                    <app-parametros *ngSwitchCase="'COMBO'" [id]="val.NOMBRE" [idkatios]="IDKatios" [grupo]="val.GRUPO"
+                        [aplicaIdKatios]="'1'" (selectedValue)="seleccionoCombo($event,val)"></app-parametros>
+                    <ng-container *ngSwitchCase="'COMBOPERFIL'" [ngSwitch]="val.ID">
+                        <p-select *ngSwitchCase="'ZONA'" [id]="val.NOMBRE" [options]="zonasPosibles"
+                            placeholder="Seleccione" [(ngModel)]="selectedComboPerfil" [disabled]="val.DISABLED == 1"
+                            (onChange)="seleccionoComboPerfil(selectedComboPerfil,val)" class="w-full">
+                        </p-select>
+                        <p-select *ngSwitchCase="'TIPO'" [id]="val.NOMBRE" [options]="tiposPosibles"
+                            placeholder="Seleccione" [(ngModel)]="selectedComboPerfil" [disabled]="val.DISABLED == 1"
+                            (onChange)="seleccionoComboPerfil(selectedComboPerfil,val)" class="w-full">
+                        </p-select>
+                        <p-select *ngSwitchCase="'CONCEPTO'" [id]="val.NOMBRE" [options]="conceptosPosibles"
+                            placeholder="Seleccione" [(ngModel)]="selectedComboPerfil" [disabled]="val.DISABLED == 1"
+                            (onChange)="seleccionoComboPerfil(selectedComboPerfil,val)" class="w-full">
+                        </p-select>
+                        <p-select *ngSwitchCase="'IDUBICACION'" [id]="val.NOMBRE" [options]="ubicacionesPosibles"
+                            placeholder="Seleccione" [(ngModel)]="selectedComboPerfil" [disabled]="val.DISABLED == 1"
+                            (onChange)="seleccionoComboPerfil(selectedComboPerfil,val)" class="w-full">
+                        </p-select>
+                    </ng-container>
+                </div>
+            </ng-container>
+    </div>
+</div>
+<div class="flex justify-content-center">
+<p-button label="Generar" (onClick)="generar()"></p-button>
+</div>
+   
+

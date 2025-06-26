@@ -1,0 +1,3 @@
+<p-select [disabled]="!bPermiteModificar" [options]="oParametros" placeholder="Seleccione" optionLabel="Descripcion"
+    [filter]="true" filterBy="label,value.Nivel" [ngModel]="opcionSeleccionada" (onChange)="selectValue($event)">
+</p-select>

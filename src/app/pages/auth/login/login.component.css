@@ -1,0 +1,13 @@
+.pages-header {
+    background: #0097A7;
+    margin-top: -3rem;
+    color: var(--primary-color-text);
+    border: 1.5px solid #E4E4E4;
+    border-radius: 4px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.input-panel{
+    width: "100%"
+}
+

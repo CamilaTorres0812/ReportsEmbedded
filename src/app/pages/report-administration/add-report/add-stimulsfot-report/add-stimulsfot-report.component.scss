@@ -1,0 +1,10 @@
+.format{
+    background-color: rgba(199, 215, 235, 0.2);
+    border: 1px solid rgb(106, 171, 245);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+::ng-deep .fileupload-custom .p-button {
+  width: 100%;
+}

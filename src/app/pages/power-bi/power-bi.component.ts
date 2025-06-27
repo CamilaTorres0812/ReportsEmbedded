@@ -64,10 +64,13 @@ export class PowerBIComponent implements OnInit, OnDestroy {
   MINUTES_BEFORE_EXPIRATION = 10;
   INTERVAL_TIME = 30000;
   private tokenCheckInterval?: any;
+  reportId: string = "";
+  isMobile: boolean = false;
   eventHandlersMap = new Map ([
     ['loaded', () => {
       this.reportObj = this.powerBIReportComponent.getReport();
       this.reportObj?.setAccessToken(this.accessToken);
+      this.hasLayout();
       console.log('Report has loaded', event);
       },
     ],
@@ -100,9 +103,15 @@ ngOnDestroy(): void {
   }
 }
   async ngOnInit() {
+    let navegador = navigator.userAgent;
+      if (navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/Windows Phone/i)) {
+          this.isMobile = true;
+      } else {
+          console.log("No estás usando un móvil");
+    }
     this.loadReport();
     this.timerService.refreshState$.subscribe(({ isPaused, interval }) => {
-    this.refreshReport(isPaused, interval);
+      this.refreshReport(isPaused, interval);
     });
   }
   
@@ -115,6 +124,7 @@ ngOnDestroy(): void {
         const id = params['idRep']
         const session =  this.sesionWE8.getDataUserM3SinHubM3()
         const idKatios = session.IDKATIOS.trim();
+        
         const reportInfo = await this.generalService.getTemplateReport(idKatios, id) as any;
         this.reportData = JSON.parse(reportInfo.CodeHTML.trim())
         await this.loadInventoryReport();
@@ -131,8 +141,8 @@ ngOnDestroy(): void {
 
   refreshReport(isPaused: boolean, interval: number) {
     if(!isPaused){
-      this.timerService.start(() => {
-        this.reportObj!.refresh()
+      this.timerService.start(interval,() => {
+        this.reportObj?.refresh()
       });
     }else{
       this.timerService.stop();
@@ -146,7 +156,6 @@ ngOnDestroy(): void {
       this.pbiService.getInventoryReport(jparams, this.reportData.reportId).subscribe({
         next: (report) => {
           if (report) {
-            console.log(report)
             this.embedUrlApi = report.embedUrl;
             this.embedReportId = report.id;
             this.datasetWorkspaceId = report.datasetWorkspaceId;
@@ -190,7 +199,6 @@ ngOnDestroy(): void {
 
     this.expDate = new Date(expSeconds * 1000); 
     //this.refreshToken();
-    console.log("EXP DATE: ",this.expDate)
   }
 
   refreshToken(): void {
@@ -240,9 +248,7 @@ ngOnDestroy(): void {
     this.pbiService.generateToken(this.datasetWorkspaceId, this.embedReportId, jparams).subscribe({
       next: (token) => {
         this.accessToken = token;
-        console.log("NUEVO TOKEN: ", this.accessToken)
         this.getJwtExpiration(this.accessToken);
-        console.log("REPORT OBJ: ", this.reportObj)
         resolve();
       },
       error: (error) =>{
@@ -252,8 +258,21 @@ ngOnDestroy(): void {
   });
   }
 
+  async hasLayout(): Promise<boolean> {
+    console.log("LAYOUT: ")
+    let pages = await this.reportObj?.getPages();
+    console.log(pages);
+    if(pages){
+      let mobileLayout = pages[0].hasLayout(models.LayoutType.MobilePortrait);
+      console.log(mobileLayout)
+    }
+    return true;
+    //let mobileLayout = pages?[0].hasLayout(models.LayoutType.MobilePortrait);
+  }
+
+
   async embedReport(): Promise<void> {
-    this.reportConfig = {
+      this.reportConfig = {
       ...this.reportConfig,
       id: this.embedReportId,
       embedUrl:this.embedUrlApi,
@@ -263,9 +282,11 @@ ngOnDestroy(): void {
           filters: {
             visible: false
           }
-        }
+        },
+        layoutType: this.isMobile ? models.LayoutType.MobilePortrait : models.LayoutType.Custom
       }
     };
+    
     this.isEmbedded = true;
   }
 
@@ -287,6 +308,9 @@ ngOnDestroy(): void {
     .then(() => console.log("Filtro aplicado correctamente"))
     .catch(error => console.error("Error al aplicar filtro: ", error))
   }
+
+
+
 
 
 }

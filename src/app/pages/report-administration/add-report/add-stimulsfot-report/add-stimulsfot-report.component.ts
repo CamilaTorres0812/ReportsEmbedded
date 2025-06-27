@@ -131,8 +131,6 @@ export class AddStimulsfotReportComponent implements OnInit {
     console.log(this.nuevoReporte)
     if (this.isValid) {
       this.generalService.crearReporteNotificacionKatios(this.idKatios, this.nuevoReporte, this.fileMrt).then(r => {
-
-        console.log("Reporte Creado")
         this.addReport.emit();
         this.messageService.success("Exitoso","Reporte Creado Exitosamente")
       }).catch(e => this.messageService.error("Error","No se pudo crear reporte"))
@@ -140,12 +138,11 @@ export class AddStimulsfotReportComponent implements OnInit {
   }
 
   cargarInputReporte() {
-    console.log("INPUT: ", this.inputReporte)
-    this.nuevoReporte.nombre = this.inputReporte["@Nombre"];
-    this.nuevoReporte.descripcion = this.inputReporte["@Descripcion"];
-    this.nuevoReporte.storedProcedure = this.inputReporte["@Data"];
-    this.idNotificacion = this.inputReporte["@IdNotificacion"];
-    this.idReporte = this.inputReporte["@IdRep"];
+    this.nuevoReporte.nombre = this.inputReporte.Nombre;
+    this.nuevoReporte.descripcion = this.inputReporte.Descripcion;
+    this.nuevoReporte.storedProcedure = this.inputReporte.Data;
+    this.idNotificacion = this.inputReporte.IdNotificacion;
+    this.idReporte = this.inputReporte.IdRep;
     this.getAdicionalesFromReporte();
     this.getMrt();
   }
@@ -189,7 +186,7 @@ export class AddStimulsfotReportComponent implements OnInit {
   }
 
     getMrt() {
-    this.generalService.getTemplateReport(this.idKatios, this.inputReporte["@IdRep"]).then(rep => {
+    this.generalService.getTemplateReport(this.idKatios, this.inputReporte.IdRep).then(rep => {
       const jsonString = rep.CodeHTML;
       const blob = new Blob([jsonString], { type: 'application/json' });
       const file = new File([blob], 'demo.mrt', { type: 'application/json' });

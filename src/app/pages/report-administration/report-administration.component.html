@@ -1,5 +1,6 @@
 
-<div class="p-3 border-bottom-1 border-300">
+<div class="min-h-screen">
+<div class="p-3 border-bottom-1 border-300 mb-3">
   <div class="flex justify-content-between align-items-center">
     <div>
       <h4 class="text-2xl font-semibold">Administración de Reportes</h4>
@@ -13,40 +14,54 @@
     </div>
   </div>
 </div>
-<p-tree [value]="oData" selectionMode="single"  (onNodeSelect)="nodeSelect($event.node)"></p-tree>
-<div class="flex">
+<!--<div class="flex">
   <p-autocomplete [(ngModel)]="selectedReport" [suggestions]="filteredReports" (completeMethod)="filterReport($event)" optionLabel="@Nombre" />
-</div>
+</div>-->
 
-<div class="grid p-5">
-  <div class="col-12 md:col-6 lg:col-4" *ngFor="let report of filteredReports">
-      <div class="border-round-lg border-1 border-solid border-gray-300 shadow-1 p-0 hover:shadow-5 transition-colors transition-duration-200">
-        <div class="p-3 border-top-3 border-solid border-round-lg w-full h-full" [ngClass] = "report['@TipoReporte'] === 'PBI' ? 'border-yellow-200' : 'border-blue-200'">
-            <div class="mb-2">
-              <p-tag [rounded]="true" [icon]="report['@TipoReporte'] === 'PBI' ? 'pi pi-chart-bar':'pi pi-file'"  
-              [value]="report['@TipoReporte'] === 'PBI' ? 'Power BI' : 'Stimulsoft'"
-              [ngClass] = "report['@TipoReporte'] === 'PBI' ? 'bg-yellow-200  text-yellow-800 border-1 border-yellow-800' : 'bg-blue-200 text-blue-800 border-1 border-blue-800'"/>
-            
-            </div>
-            <div class="text-lg font-semibold leading-tight">
-                        {{ report["@Nombre"] }}
-                    </div>
-            <div class="mt-1 text-sm text-gray-500 line-clamp-2">
-                        {{ report["@Descripcion"] }}
-                    </div>
-            <div class="flex justify-content-end gap-2 mt-3">
-                <p-button icon="pi pi-eye" variant="outlined" size="small" severity="info" (click) = "showReport(report)"></p-button>
-                <app-edit-report [idKatios] = "idKatios" [reporte] = "report" (editReport) = "refreshReports()"></app-edit-report>
-                <p-button *ngIf = "report['@TipoReporte'] !== 'PBI'" icon="pi pi-download" variant="outlined" size="small" severity="help" (click)="descargarMrtClick(report)"></p-button>
-                <app-delete-report [idKatios] = "idKatios" [reporte] = "report" (deleteReport) = "refreshReports()"></app-delete-report>
-            </div>
-        </div>
+<p-panel [style]="{
+        height: '100%',
+    }">
+  
+    <div class="flex justify-content-between align-items-center">
+        <p-tree [value]="oData" selectionMode="single"  (onNodeSelect)="nodeSelect($event.node)" styleClass="w-[30rem]"></p-tree>
+        <div class="flex items-center justify-end">
+        <span class="mx-1 text-color">Items per page: </span>
+        <p-select [options]="options" optionLabel="label" optionValue="value" [(ngModel)]="rows2" (ngModelChange)="cambiarPagina()" />
+        <p-paginator [first]="first2" [rows]="rows2" [totalRecords]="120" (onPageChange)="onPageChange2($event)" [showCurrentPageReport]="true"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"  [showPageLinks]="false" [showFirstLastIcon]="false" ></p-paginator>
+      </div>
+      </div>
+    
+
+  <div class="grid p-5">
+    <div class="col-12 md:col-6 lg:col-4" *ngFor="let report of ListReportes">
+        <div class="border-round-lg border-1 border-solid border-gray-300 shadow-1 p-0 hover:shadow-5 transition-colors transition-duration-200">
+          <div class="p-3 border-top-3 border-solid border-round-lg w-full h-full" [ngClass] = "report.TipoReporte === 'PBI' ? 'border-yellow-200' : 'border-blue-200'">
+              <div class="mb-2">
+                <p-tag [rounded]="true" [icon]="report.TipoReporte === 'PBI' ? 'pi pi-chart-bar':'pi pi-file'"  
+                [value]="report.TipoReporte === 'PBI' ? 'Power BI' : 'Stimulsoft'"
+                [ngClass] = "report.TipoReporte === 'PBI' ? 'bg-yellow-200  text-yellow-800 border-1 border-yellow-800' : 'bg-blue-200 text-blue-800 border-1 border-blue-800'"/>
+              
+              </div>
+              <div class="text-lg font-semibold leading-tight">
+                          {{ report.Nombre }}
+                      </div>
+              <div class="mt-1 text-sm text-gray-500 line-clamp-2">
+                          {{ report.Descripcion }}
+                      </div>
+              <div class="flex justify-content-end gap-2 mt-3">
+                  <p-button icon="pi pi-eye" variant="outlined" size="small" severity="info" (click) = "showReport(report)"></p-button>
+                  <app-edit-report [idKatios] = "idKatios" [reporte] = "report" (editReport) = "refreshReports()"></app-edit-report>
+                  <p-button *ngIf = "report['@TipoReporte'] !== 'PBI'" icon="pi pi-download" variant="outlined" size="small" severity="help" (click)="descargarMrtClick(report)"></p-button>
+                  <app-delete-report [idKatios] = "idKatios" [reporte] = "report" (deleteReport) = "refreshReports()"></app-delete-report>
+              </div>
+          </div>
+      </div>
     </div>
   </div>
-</div>
-<app-pagination-report></app-pagination-report>
- 
+</p-panel>
 
+</div>
 
 
 

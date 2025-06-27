@@ -22,6 +22,10 @@ import { MessageReportService } from 'src/services/message-report.service';
 import { Tag } from 'primeng/tag';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { PaginationReportComponent } from './pagination-report/pagination-report.component';
+import { PaginatorModule,PaginatorState } from 'primeng/paginator';
+import { SelectModule } from 'primeng/select';
+import { ReportsManagementService } from 'src/services/reports-management.service';
+import { PanelModule } from 'primeng/panel';
 interface AutoCompleteCompleteEvent {
     originalEvent: Event;
     query: string;
@@ -29,7 +33,7 @@ interface AutoCompleteCompleteEvent {
 @Component({
   selector: 'app-report-administration',
   standalone: true,
-  imports: [CommonModule,DialogModule, ButtonModule, FormsModule, TreeModule,Tag, AddReportComponent, DownloadDataComponent,EditReportComponent,DeleteReportComponent,AutoCompleteModule,PaginationReportComponent],
+  imports: [CommonModule,DialogModule, ButtonModule, FormsModule, TreeModule,Tag, AddReportComponent, DownloadDataComponent,EditReportComponent,DeleteReportComponent,AutoCompleteModule,PaginatorModule, SelectModule,PanelModule],
   templateUrl: './report-administration.component.html',
   styleUrl: './report-administration.component.css',
   providers: [MessageReportService]
@@ -51,9 +55,20 @@ export class ReportAdministrationComponent {
   selectedReport: any;
   nodoSeleccionado: any;
   filteredReports: any[] = [];
+  first2: number = 0;
+
+  rows2: number = 6;
+
+  totalRecords: number = 120;
+
+  options = [
+      { label: 6, value: 6 },
+      { label: 12, value: 12 },
+      { label: 24, value: 24 }
+  ];
 
   constructor(private generalService: GeneralService,
-    private sesionWE8: SesionWe8Service, private router: Router, private messageService: MessageReportService) { 
+    private sesionWE8: SesionWe8Service, private router: Router, private messageService: MessageReportService, private reportsManagement: ReportsManagementService) { 
     this.idKatios = this.sesionWE8.getDataUserM3SinHubM3().IDKATIOS.trim();
     this.NDOC = this.sesionWE8.getDataUserM3SinHubM3().NDOC;
     this.TDOC = this.sesionWE8.getDataUserM3SinHubM3().TDOC; 
@@ -116,7 +131,7 @@ export class ReportAdministrationComponent {
     this.nodoSeleccionado = e;
     this.Filtros = new Array<any>();
     this.CrearFiltros(e);
-    this.APlicarFiltros(this.Filtros);
+    this.aplicarFiltros();
   }
 
   public CrearFiltros(node: any) {
@@ -132,16 +147,14 @@ export class ReportAdministrationComponent {
    * Aplicar filtros
    * @param iFiltros variable de Filtros a aplicar
    */
-  public APlicarFiltros(iFiltros: any) {
-    var Filtros = { "Filtros": JSON.stringify({ "Filtros": iFiltros }), "ndoc":this.NDOC, "tdoc": this.TDOC };
-    this.generalService.getReportsByFilter(this.idKatios, 'otro', Filtros).then(resp => {
-      if (resp && resp.RESPUESTA) {
-        if (resp.RESPUESTA.nxk.length) {
-          this.ListReportes = resp.RESPUESTA.nxk;
-        } else {
-          this.ListReportes = new Array<any>(resp.RESPUESTA.nxk);
-        }
-        this.filteredReports = this.ListReportes;
+  public aplicarFiltros( ) {
+    const limInf = this.first2 + 1;
+    const limSup = this.first2 + this.rows2;
+    var data = { "ndoc":this.NDOC, "tdoc": this.TDOC,"inf": limInf, "sup": limSup };
+    this.reportsManagement.getReportsByFilter(this.idKatios, data,this.Filtros).then(resp => {
+      if (resp && resp.Reportes) {
+        console.log(resp)
+        this.ListReportes = resp.Reportes;
       } else {
         this.ListReportes = [];
       }
@@ -155,7 +168,7 @@ export class ReportAdministrationComponent {
   }
 
   descargarMrtClick(reporte: any) {
-    this.generalService.getTemplateReport(this.idKatios, reporte["@IdRep"]).then(rep => {
+    this.generalService.getTemplateReport(this.idKatios, reporte.IdRep).then(rep => {
       this.descargarArchivoMrt(rep.CodeHTML, "DataMrt")
     }).catch(r=>this.messageService.error("Error",'No se pudo descargar el reporte'));
   }
@@ -172,8 +185,8 @@ export class ReportAdministrationComponent {
   }
 
   showReport(reporte:any){
-    const idRep = reporte["@IdRep"];
-    const tipoReporte = reporte["@TipoReporte"];
+    const idRep = reporte.IdRep;
+    const tipoReporte = reporte.TipoReporte;
     if(tipoReporte !== "PBI"){
       this.router.navigateByUrl(`admin/STI/${idRep}`);
     }else{
@@ -184,19 +197,30 @@ export class ReportAdministrationComponent {
   filterReport(event: AutoCompleteCompleteEvent) {
         let filtered: any[] = [];
         let query = event.query || '';
-      console.log("SELECTED REPORT", this.selectedReport)
         if (!query.trim()) {
           this.filteredReports = [...this.ListReportes]; 
         } else{
             for (let i = 0; i < (this.ListReportes as any[]).length; i++) {
               let report = (this.ListReportes as any[])[i];
-              if (report["@Nombre"].toLowerCase().indexOf(query.toLowerCase()) == 0) {
+              if (report.Nombre.toLowerCase().indexOf(query.toLowerCase()) == 0) {
                   filtered.push(report);
               }
             }
             this.filteredReports = filtered;
         }
         
+    }
+    onPageChange2(event: PaginatorState) {
+        this.first2 = event.first ?? 0;
+        this.rows2 = event.rows ?? 6;
+        console.log(this.first2,this.rows2,this.first2+this.rows2);
+        this.aplicarFiltros();
+    }
+    cambiarPagina(){
+      this.first2 = 0;
+      console.log(this.Filtros)
+      this.aplicarFiltros();
+      console.log("cambio")
     }
  
 }

@@ -31,44 +31,9 @@ export class MenuComponent implements OnInit{
     this.idKatios = this.usuarioSesion.IDKATIOS.trim();
     this.perfil = this.usuarioSesion.PERMENU;
 
-
     this.generalService.getMenu(this.idKatios, this.perfil).then((data: any) => {
       this.model = data;
       this.recursivaMenu(this.model);
-      const lastItem = this.model[this.model.length-1];
-      const categoria = Number(lastItem.Categoria2) + 1;
-      const categoriaString = categoria <= 9 ? categoria.toString().padStart(2, '0') : categoria.toString();
-      const id = lastItem.Categoria1 + categoriaString + lastItem.Categoria3 + lastItem.Categoria4 + lastItem.Categoria5;
-      const idElemento = "CONFIGURACIÓN";
-      const key = "CONFIGURACIÓN";
-      const label = "CONFIGURACIÓN";
-      const items = [{
-        Categoria1: lastItem.Categoria1,
-        Categoria2: "02",
-        Categoria3: "01",
-        Categoria4: "00",
-        Categoria5: "00",
-        ID: lastItem.Categoria1 + "02"+"01"+"00"+"00",
-        IDElemento: "CONFIGURAR",
-        KEY: "CONFIGURAR",
-        LINK: "../SiteN/RedirectWE8.aspx?Componente=/admin/reports",
-        icon: "pi pi-file-check",
-        label: "CONFIGURAR REPORTES"
-      }];
-      this.model.push({
-        Categoria1: lastItem.Categoria1,
-        Categoria2: categoriaString,
-        Categoria3: lastItem.Categoria3,
-        Categoria4: lastItem.Categoria4,
-        Categoria5: lastItem.Categoria5,
-        ID: id,
-        IDElemento: idElemento,
-        KEY: key,
-        LINK: "",
-        icon: "pi pi-cog",
-        items: items,
-        label: label
-      });
     });
 
    

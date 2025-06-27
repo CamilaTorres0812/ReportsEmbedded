@@ -66,7 +66,7 @@ import { IftaLabelModule } from 'primeng/iftalabel';
             pInputText
             type="number"
             [(ngModel)]="timerValue"
-            min="60"
+            min="120"
         />
             <p-button  [icon]="reproduce ? 'pi pi-pause' : 'pi pi-play'" [severity]="reproduce ? 'danger' : 'success'" (click)="cambiarBoton()"/>
             <button  class="app-config-button" [ngStyle]="{ visibility: reproduce ? 'visible' : 'hidden' }" (click)="op.toggle($event)">
@@ -140,7 +140,7 @@ export class TopbarComponent {
     }
 
     guardartimer(){
-        this.timerValue = this.timerValue < 60 ? 60 : this.timerValue;
+        this.timerValue = this.timerValue < 120 ? 120 : this.timerValue;
         let time = this.timerValue * 1000;
         
         this.timerService.setRefreshInterval(false, time);

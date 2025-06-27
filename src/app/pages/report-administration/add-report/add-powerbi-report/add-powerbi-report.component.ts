@@ -66,11 +66,11 @@ export class AddPowerbiReportComponent implements OnInit{
   }
 
   cargarInputReporte() {
-    this.nuevoReporte.nombre = this.inputReporte["@Nombre"];
-    this.nuevoReporte.descripcion = this.inputReporte["@Descripcion"];
-    this.idNotificacion = this.inputReporte["@IdNotificacion"];
-    this.idReporte = this.inputReporte["@IdRep"];
-    this.nuevoReporte.tipoReporte = this.inputReporte["@TipoReporte"];   
+    this.nuevoReporte.nombre = this.inputReporte.Nombre;
+    this.nuevoReporte.descripcion = this.inputReporte.Descripcion;
+    this.idNotificacion = this.inputReporte.IdNotificacion;
+    this.idReporte = this.inputReporte.IdRep;
+    this.nuevoReporte.tipoReporte = this.inputReporte.TipoReporte;   
     this.getAdicionalesFromReporte();
     this.getReportData();
   }

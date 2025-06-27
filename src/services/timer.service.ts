@@ -5,7 +5,6 @@ import { BehaviorSubject, interval, Subject, Subscription } from 'rxjs';
   providedIn: 'root'
 })
 export class TimerService {
-  private interval = 60000;
   private elapsedMs = 0;
   private intervalSub?: Subscription;
   private tickSub?: Subscription;
@@ -17,25 +16,24 @@ export class TimerService {
   isMessageVisible$ = new BehaviorSubject<boolean>(false);
 
   setRefreshInterval(isPaused: boolean, interval:number){
-    this.refreshSubject.next({isPaused, interval});
-    this.interval = interval;
     this.elapsedMs = 0;
+    this.refreshSubject.next({isPaused, interval});
   }
 
-  start(reportCallback: () => void){
+  start(intervalTime: number,reportCallback: () => void){
     this.elapsedMs = 0;
     this.intervalSub?.unsubscribe();
     this.tickSub?.unsubscribe();
 
-    this.intervalSub = interval(this.interval).subscribe(() => {
+    this.intervalSub = interval(intervalTime).subscribe(() => {
       reportCallback();
       this.elapsedMs = 0;
     });
 
     this.tickSub = interval(1000).subscribe(() => {
       this.elapsedMs += 1000;
-      const timeLeft = this.interval - this.elapsedMs;
-       this.message$.next(`Will be updated in ${Math.ceil(timeLeft/1000)} s`);
+      const timeLeft = intervalTime - this.elapsedMs;
+       this.message$.next(`Se actualizará en ${Math.ceil(timeLeft/1000)} s`);
       if(timeLeft <= 5000 && timeLeft > 0){
         this.isMessageVisible$.next(true);
       }else{

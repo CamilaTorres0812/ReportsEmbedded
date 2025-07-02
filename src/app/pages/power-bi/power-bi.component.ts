@@ -1,7 +1,7 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Embed, IReportEmbedConfiguration, service } from 'powerbi-client';
-import * as pbi from 'powerbi-client';
+import * as powerbi from 'powerbi-client';
 import { PowerBIEmbedModule, PowerBIReportEmbedComponent } from 'powerbi-client-angular';
 import { IHttpPostMessageResponse } from 'http-post-message';
 import 'powerbi-report-authoring';
@@ -11,24 +11,24 @@ import { SesionWe8Service } from 'src/services/sesion-we8.service';
 import { GeneralService } from 'src/services/general.service';
 import { TimerService } from 'src/services/timer.service';
 import { CommonModule } from '@angular/common';
-import { MenuItemComponent } from '@/layout/components/menu-item/menu-item.component';
 import * as models from 'powerbi-models';
-import { AppBreadcrumb } from '@/layout/components/app.breadcrumb';
-import { BlockUIModule } from 'primeng/blockui';
+import { LoadingComponent } from '@/layout/components/loading/loading.component';
+import { TabsModule } from 'primeng/tabs';
+import { ButtonModule } from 'primeng/button';
+import { FormsModule } from '@angular/forms';
+import { PanelModule } from 'primeng/panel';
+import { TimerComponent } from './timer/timer.component';
+import { Tooltip } from 'primeng/tooltip';
+import { MessageReportService } from 'src/services/message-report.service';
 
-export interface ConfigResponse {
-  Id: string;
-  EmbedUrl: string;
-  EmbedToken: {
-    Token: string;
-  };
-}
+
 @Component({
   selector: 'app-power-bi',
   standalone: true,
-  imports: [CommonModule, MenuItemComponent, RouterModule, PowerBIEmbedModule, AppBreadcrumb,BlockUIModule],
+  imports: [CommonModule, FormsModule, RouterModule, PowerBIEmbedModule,LoadingComponent,TabsModule,PanelModule,TimerComponent,ButtonModule,Tooltip],
   templateUrl: './power-bi.component.html',
-  styleUrls: ['./power-bi.component.css']
+  styleUrls: ['./power-bi.component.css'],
+  providers: [MessageReportService]
 })
 export class PowerBIComponent implements OnInit, OnDestroy {
   @ViewChild(PowerBIReportEmbedComponent) powerBIReportComponent!: PowerBIReportEmbedComponent;
@@ -55,8 +55,7 @@ export class PowerBIComponent implements OnInit, OnDestroy {
   phasedEmbeddingFlag = false;
   reportClass = 'report-container';
   refreshIntervalId: any;
-  private refreshTimer?: Subscription;
-  private reportObj: pbi.Report | null = null;
+  reportObj: powerbi.Report | null = null;
   hasRole: boolean = false;
   public isLoading: boolean = false;
   expDate!: Date;
@@ -66,35 +65,56 @@ export class PowerBIComponent implements OnInit, OnDestroy {
   private tokenCheckInterval?: any;
   reportId: string = "";
   isMobile: boolean = false;
+  hasMobileView: boolean = false;
+  pages: powerbi.Page[] = [];
+  activeTabIndex: number = 0;
+  reportInfo: any;
+  state: boolean = false;
+  lastDate: string = '';
+  view: string = 'Desktop';
+  
   eventHandlersMap = new Map ([
-    ['loaded', () => {
-      this.reportObj = this.powerBIReportComponent.getReport();
-      this.reportObj?.setAccessToken(this.accessToken);
-      this.hasLayout();
-      console.log('Report has loaded', event);
-      },
+    ['loaded', async () => {
+        this.reportObj = this.powerBIReportComponent.getReport();
+        this.reportObj?.setAccessToken(this.accessToken);
+        this.pages = await this.reportObj?.getPages();
+        await this.hasLayout(this.pages);
+        console.log('Report has loaded') 
+    }
+   
     ],
     ['rendered', () => {
       console.log('Report has rendered')
     }],
     ['error', (event?: service.ICustomEvent<any>) => {
-        if (event) {
-          console.error(event.detail);
+        if (event && event.detail && event.detail.message?.includes('mobileLayoutError')) {
+          console.log("No hay plantilla de movil", event.detail)
+          this.hasMobileView = false;
         }
+
         if (event && event.detail && event.detail.message?.includes('TokenExpired')) {
           console.log("EXPIRO", event.detail)
+          this.loadToken();
         }
       },
     ],
     ['visualClicked', () => console.log('visual clicked')],
-    ['pageChanged', (event) => console.log(event)],
+    ['pageChanged', (event) => {
+        let page = event?.detail.newPage;
+        let index = this.pages.findIndex(p => p.name === page.name);
+        this.activeTabIndex = index < 0 ? 0 : index;
+    }
+       ],
   ]) as Map<string, (event?: service.ICustomEvent<any>, embeddedEntity?: Embed) => void | null>;
 
 
   constructor(
     private router: Router, private pbiService: PbiService, private sesionWE8: SesionWe8Service, private generalService: GeneralService,
-     private activatedRoute: ActivatedRoute, private timerService: TimerService
+     private activatedRoute: ActivatedRoute, private timerService: TimerService,private messageService: MessageReportService
   ) {}
+
+  
+
 
 ngOnDestroy(): void {
   if (this.tokenCheckInterval) {
@@ -103,13 +123,13 @@ ngOnDestroy(): void {
   }
 }
   async ngOnInit() {
-    let navegador = navigator.userAgent;
-      if (navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/Windows Phone/i)) {
-          this.isMobile = true;
-      } else {
-          console.log("No estás usando un móvil");
+    let navegador = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    let size = window.matchMedia("(max-width: 767px)").matches;
+    if(navegador || size){
+      this.isMobile = true;
     }
     this.loadReport();
+    this.timerService.lastDate$.subscribe(date => this.lastDate = date);
     this.timerService.refreshState$.subscribe(({ isPaused, interval }) => {
       this.refreshReport(isPaused, interval);
     });
@@ -118,22 +138,24 @@ ngOnDestroy(): void {
 
     
   loadReport() {
-    this.isLoading = true;
     this.activatedRoute.params.subscribe(async params => {
-        try {
+      this.pages = [];
+      this.isLoading = true;
+      try {
         const id = params['idRep']
         const session =  this.sesionWE8.getDataUserM3SinHubM3()
         const idKatios = session.IDKATIOS.trim();
         
         const reportInfo = await this.generalService.getTemplateReport(idKatios, id) as any;
+        this.reportInfo = reportInfo;
         this.reportData = JSON.parse(reportInfo.CodeHTML.trim())
         await this.loadInventoryReport();
-        await this.loadAccessTokens();
         await this.validateRole();
         await this.loadToken();
         this.isLoading = false;
         this.embedReport();
       } catch (error) {
+        this.messageService.error("Error","No se pudo cargar el reporte");
         console.error('An error occurred:', error);
       }
     }) 
@@ -162,34 +184,19 @@ ngOnDestroy(): void {
             this.datasetId = report.datasetId;
             resolve(); 
           } else {
-            console.error('Inventory report not found');
+            this.messageService.error("Error","Reporte no encontrado");
             reject('Inventory report not found'); 
           }
         },
         error: (error) => {
-          console.error('Error fetching reports:', error);
+          this.messageService.error("No se pudo cargar el reporte",error.message);
           reject(error); 
         }
       });
     })
   }
   
-  // Adjust loadAccessTokens to return a Promise
-  loadAccessTokens(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      var jparams = {clientId: this.reportData.clientId,clientSecret: this.reportData.clientSecret }
-      this.pbiService.getToken(jparams).subscribe({
-        next: (token) => {
-          this.accessToken = token;
-          resolve(); // Resolve the promise when the token is loaded
-        },
-        error: (error) => {
-          console.error('Error fetching access token:', error);
-          reject(error); // Reject the promise on error
-        }
-      });
-    });
-  }
+ 
 
   getJwtExpiration(token: string)  {
 
@@ -198,7 +205,7 @@ ngOnDestroy(): void {
     const expSeconds = decodedPayload.exp; 
 
     this.expDate = new Date(expSeconds * 1000); 
-    //this.refreshToken();
+    this.refreshToken();
   }
 
   refreshToken(): void {
@@ -210,9 +217,7 @@ ngOnDestroy(): void {
       const currentTime = Date.now();
       const timeUntilExpiration = this.expDate.getTime() - currentTime;
       const timeToUpdate = this.MINUTES_BEFORE_EXPIRATION * 60 * 1000;
-      console.log("tiempo restante: ", timeToUpdate)
       if (timeUntilExpiration <= timeToUpdate) {
-        console.log("Updating report access token");
         this.loadToken();
       }
     }, this.INTERVAL_TIME);
@@ -228,6 +233,7 @@ ngOnDestroy(): void {
         resolve();
       },
       error: (error) =>{
+          this.messageService.error("Error","Error al obtener reporte");
          console.error('Error fetching role:', error)
          reject(error);}
     });
@@ -243,7 +249,7 @@ ngOnDestroy(): void {
     var jparams: any = {clientId: this.reportData.clientId,clientSecret: this.reportData.clientSecret, datasetId: this.datasetId};
     if(this.hasRole){
       jparams.username = idKatios;
-      jparams.role = 'BOS';
+      jparams.role = perfil;
     }
     this.pbiService.generateToken(this.datasetWorkspaceId, this.embedReportId, jparams).subscribe({
       next: (token) => {
@@ -252,45 +258,80 @@ ngOnDestroy(): void {
         resolve();
       },
       error: (error) =>{
+          this.messageService.error("Error","Error al obtener reporte");
          console.error('Error fetching token:', error)
          reject(error);}
     });
   });
   }
 
-  async hasLayout(): Promise<boolean> {
-    console.log("LAYOUT: ")
-    let pages = await this.reportObj?.getPages();
-    console.log(pages);
+  async hasLayout(pages: any) {
+    let mobileLayout;
     if(pages){
-      let mobileLayout = pages[0].hasLayout(models.LayoutType.MobilePortrait);
-      console.log(mobileLayout)
+      mobileLayout = await pages[0].hasLayout(models.LayoutType.MobilePortrait);
+      if(this.isMobile && mobileLayout){
+        this.hasMobileView = true;
+      }else{
+        this.hasMobileView = false;
+      }
     }
-    return true;
-    //let mobileLayout = pages?[0].hasLayout(models.LayoutType.MobilePortrait);
   }
 
 
   async embedReport(): Promise<void> {
-      this.reportConfig = {
+     this.reportConfig = {
       ...this.reportConfig,
       id: this.embedReportId,
       embedUrl:this.embedUrlApi,
       accessToken: this.accessToken,
       settings: {
-        panes: {
+          panes: {
           filters: {
             visible: false
+          },
+          pageNavigation: {
+            visible: false  
           }
         },
-        layoutType: this.isMobile ? models.LayoutType.MobilePortrait : models.LayoutType.Custom
+        layoutType: this.isMobile ? models.LayoutType.MobileLandscape : models.LayoutType.Custom
       }
     };
     
-    this.isEmbedded = true;
+     
+   
   }
 
-  private applyCompanyFilter(): void {
+  onTabChanged(event: any) {
+    const currentPage = this.pages[event];
+    if(currentPage){
+      this.reportObj?.setPage(currentPage?.name);
+    }
+
+  }
+
+  changeState(state: boolean){
+    this.state = state;
+  }
+  changeView(){
+    let newSettings: models.ISettings;
+    this.view = this.view === "Mobile" ? "Desktop" : "Mobile";
+    if(this.view === "Mobile" && this.hasMobileView){
+      newSettings = {
+          layoutType: models.LayoutType.MobilePortrait
+      };
+    }else{
+      newSettings = {
+          layoutType: models.LayoutType.MobileLandscape
+      };
+    }
+    this.reportObj?.updateSettings(newSettings);
+  
+  }
+
+
+
+
+  /*private applyCompanyFilter(): void {
     if(!this.reportObj) return;
     const company = 'VE'
     const filter: models.IBasicFilter = {
@@ -301,13 +342,13 @@ ngOnDestroy(): void {
       },
       operator: 'In',
       values: [company],
-      filterType: pbi.models.FilterType.Basic,
+      filterType: powerbi.models.FilterType.Basic,
       requireSingleSelection: true
     }
     this.reportObj.setFilters([filter])
     .then(() => console.log("Filtro aplicado correctamente"))
     .catch(error => console.error("Error al aplicar filtro: ", error))
-  }
+  }*/
 
 
 

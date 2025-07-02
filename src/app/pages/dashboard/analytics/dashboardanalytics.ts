@@ -12,7 +12,7 @@ import { RatingsWidget } from '@/pages/dashboard/analytics/components/ratingswid
     selector: 'app-dashboard-analytics',
     standalone: true,
     imports: [MonthlyComparisonWidget, InsightsWidget, StatsWidget, StoresWidget, TopSearchesWidget, AnalyticsTableWidget, ExpensesWidget, RatingsWidget],
-    template: `<div class="text-center">
+    template: `<div class="text-center mt-5">
   <div class="flex flex-column align-items-center justify-content-center gap-4 mx-auto max-w-30rem">
     <div class="flex align-items-center justify-content-center bg-gray-200 border-circle" style="height: 5rem; width: 5rem;">
       <i class="pi pi-chart-bar text-gray-600" style="font-size: 2.5rem;"></i>

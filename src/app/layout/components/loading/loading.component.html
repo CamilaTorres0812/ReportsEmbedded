@@ -1,0 +1,16 @@
+  <p-blockUI [blocked]="isLoading">
+    <div class="flex align-items-center justify-content-center w-full h-full">
+        <div [ngClass] = "reportType === 'PBI' ? 'border-yellow-800 format-pbi' : reportType === 'STI' ? 'border-blue-800 format-sti' : 'border-primary format'" class="shadow-5 border-1 border-round-2xl">
+          <div class="p-4 text-center flex flex-column align-items-center gap-4">
+            <div [ngClass] = "reportType === 'PBI' ? 'bg-yellow-300 border-yellow-800' : reportType === 'STI' ? 'bg-blue-300 border-blue-800' : 'bg-indigo-300 border-primary'" class="w-4rem h-4rem border-round-2xl border-1 flex align-items-center justify-content-center">
+              <i [ngClass] = "reportType === 'PBI' ? 'text-yellow-800' : reportType === 'STI' ? 'text-blue-800' : 'text-primary'" class="pi pi-spin pi-cog" style="font-size: 2rem"></i>
+            </div>
+            <div>
+              <h3 [ngClass] = "reportType === 'PBI' ? 'text-yellow-800' : reportType === 'STI' ? 'text-blue-800' : 'text-primary'" class="text-xl font-semibold">{{ message }}</h3>
+              <p [ngClass] = "reportType === 'PBI' ? 'text-yellow-700' : reportType === 'STI' ? 'text-blue-700' : 'text-indigo-600'" class="text-sm">{{ subMessage }}</p>
+            </div>
+          </div>
+        </div>
+  </div>
+</p-blockUI>
+  

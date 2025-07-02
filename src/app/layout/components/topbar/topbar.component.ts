@@ -7,7 +7,6 @@ import {Ripple} from 'primeng/ripple';
 import {InputText} from 'primeng/inputtext';
 import {ButtonModule} from 'primeng/button';
 import {FormsModule} from '@angular/forms';
-import {MegaMenuModule} from 'primeng/megamenu';
 import {BadgeModule} from 'primeng/badge';
 import {OverlayBadge} from 'primeng/overlaybadge';
 import { PersonasService } from 'src/services/personas.service';
@@ -15,10 +14,7 @@ import { SesionWe8Service } from 'src/services/sesion-we8.service';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { TimerService } from 'src/services/timer.service';
-import { TooltipModule } from 'primeng/tooltip';
-import { Popover, PopoverModule } from 'primeng/popover';
-import { MessageService } from 'primeng/api';
+import { PopoverModule } from 'primeng/popover';
 import { ToastModule } from 'primeng/toast';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -57,27 +53,8 @@ import { IftaLabelModule } from 'primeng/iftalabel';
     </a>
     </div>
 
-    <div class="layout-topbar-end">
-    <div class="layout-topbar-actions-start">
-        <div class="flex flex-row items-center justify-between p-3 gap-1">
-            <label for="timer">Tiempo (seg):</label>
-            <input
-            class="text-base text-color surface-overlay p-2 border-round appearance-none outline-none w-6rem"
-            pInputText
-            type="number"
-            [(ngModel)]="timerValue"
-            min="120"
-        />
-            <p-button  [icon]="reproduce ? 'pi pi-pause' : 'pi pi-play'" [severity]="reproduce ? 'danger' : 'success'" (click)="cambiarBoton()"/>
-            <button  class="app-config-button" [ngStyle]="{ visibility: reproduce ? 'visible' : 'hidden' }" (click)="op.toggle($event)">
-                    <i class="pi pi-clock"></i>
-            </button>
-            <p-popover #op>
-                <span>{{message}}</span>
-            </p-popover>
-        </div>
-    </div>
-    <p>Versión: 25.06.12.0</p>
+    <div class="layout-topbar-end text-center">
+    <p class="mx-auto">Versión: 25.06.12.0</p>
     <div class="layout-topbar-actions-end">
         <ul class="layout-topbar-items">
             <li>
@@ -106,7 +83,7 @@ import { IftaLabelModule } from 'primeng/iftalabel';
 export class TopbarComponent {
   idKatios: string = '';
   imageUrl: string = '';
-  timerValue: number = 60;
+  timerValue: number = 120;
   usuarioSesion: any;
   activeItem: number;
   reproduce: boolean = false;
@@ -118,7 +95,7 @@ export class TopbarComponent {
 
     @ViewChild('mobileMenuButton') mobileMenuButton!: ElementRef<HTMLButtonElement>;
 
-    constructor(private personasService: PersonasService,private sesionWE8: SesionWe8Service,private timerService: TimerService, private messageService: MessageService) {
+    constructor(private personasService: PersonasService,private sesionWE8: SesionWe8Service) {
     this.activeItem = -1;
 
   }
@@ -127,40 +104,15 @@ export class TopbarComponent {
         this.usuarioSesion = this.sesionWE8.getDataUserM3SinHubM3();
         this.idKatios = this.usuarioSesion.IDKATIOS.trim();
         this.imageUrl = `https://nukak.tecfinanzas.com/Storage/Images/${this.idKatios}/logo.png`;
-        this.timerService.message$.subscribe(msg => this.message = msg);
     }
 
-    cambiarBoton(){
-        this.reproduce = !this.reproduce;
-        if(this.reproduce){
-        this.guardartimer();
-        } else{
-        this.pausartimer();
-        }
-    }
 
-    guardartimer(){
-        this.timerValue = this.timerValue < 120 ? 120 : this.timerValue;
-        let time = this.timerValue * 1000;
-        
-        this.timerService.setRefreshInterval(false, time);
-    
-    }
-
-    pausartimer(){
-        let time = this.timerValue * 1000;
-        this.timerService.setRefreshInterval(true, time);
-    }
 
 
     finSesion(){
     this.personasService.cerrarSesion();
   }
-  mostrarMensaje(event:any, op: Popover){
-    const actual = this.timerService.getElapsedSeconds();
-    this.message = `Han pasado ${actual} s`
-    op.toggle(event);
-  }
+
 
   onMenuButtonClick() {
         this.layoutService.onMenuToggle();

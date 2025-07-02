@@ -25,7 +25,7 @@ export class EditReportComponent {
   }
   showEditDialog(){
     this.visible = true;
-    this.tipoReporte = this.reporte.TipoReporte;
+    this.tipoReporte = this.reporte["@TipoReporte"];
     switch(this.tipoReporte){
       case 'PBI':
         this.showFormPBI = true;

@@ -1,37 +1,32 @@
 import {
   Tooltip,
   TooltipModule
-} from "./chunk-U6X4VOCE.js";
+} from "./chunk-DCU3MEM6.js";
 import {
   zindexutils
 } from "./chunk-2CJHELJX.js";
 import {
-  Badge,
-  BadgeModule
-} from "./chunk-TZIQLAQK.js";
-import {
   Ripple
-} from "./chunk-P24KKCWG.js";
+} from "./chunk-ZGYX2NM7.js";
 import {
   ConnectedOverlayScrollHandler
 } from "./chunk-Z7QHAORV.js";
 import {
-  RouterLink,
-  RouterLinkActive,
-  RouterModule
-} from "./chunk-LZ32FR2F.js";
+  Badge,
+  BadgeModule
+} from "./chunk-UBRY2QLG.js";
 import {
   BaseComponent
-} from "./chunk-F7QTEBS6.js";
-import "./chunk-DLJWOXI3.js";
+} from "./chunk-7CLRHXVY.js";
+import "./chunk-BLSUVSBU.js";
 import {
   BaseStyle
-} from "./chunk-34K6Q4LS.js";
+} from "./chunk-XWAV7QJU.js";
 import {
   OverlayService,
   PrimeTemplate,
   SharedModule
-} from "./chunk-VS4LFPIK.js";
+} from "./chunk-P7QTVBJT.js";
 import {
   absolutePosition,
   appendChild,
@@ -42,12 +37,19 @@ import {
   relativePosition,
   uuid
 } from "./chunk-7T4SVPTQ.js";
+import "./chunk-TZIJKBMI.js";
+import "./chunk-YAPJLE7E.js";
 import {
   animate,
   style,
   transition,
   trigger
 } from "./chunk-XUCK6U4K.js";
+import {
+  RouterLink,
+  RouterLinkActive,
+  RouterModule
+} from "./chunk-LZ32FR2F.js";
 import {
   DomSanitizer
 } from "./chunk-YN4I2MB6.js";
@@ -124,11 +126,9 @@ import {
   ɵɵtextInterpolate,
   ɵɵviewQuery
 } from "./chunk-L6742YF5.js";
-import "./chunk-PEBH6BBU.js";
 import "./chunk-WPM5VTLQ.js";
+import "./chunk-PEBH6BBU.js";
 import "./chunk-4S3KYZTJ.js";
-import "./chunk-CWYBPNCF.js";
-import "./chunk-NJ25EVEJ.js";
 import "./chunk-GZBIO5IJ.js";
 
 // node_modules/primeng/fesm2022/primeng-menu.mjs

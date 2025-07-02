@@ -1,0 +1,21 @@
+.format-pbi{
+    background-color: rgb(247, 243, 210);
+}
+
+.format-sti{
+    background-color: rgb(210, 222, 247);
+}
+
+.format{
+    background-color: rgb(235, 218, 247);
+}
+
+.container {
+  position: relative; 
+}
+.center{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

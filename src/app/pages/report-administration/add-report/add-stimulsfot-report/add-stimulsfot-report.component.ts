@@ -16,11 +16,12 @@ import { StoresProcedureService } from 'src/services/stores-procedure.service';
 import { MessageReportService } from 'src/services/message-report.service';
 import { BadgeModule } from 'primeng/badge';
 import { ChipModule } from 'primeng/chip';
+import { LoadingComponent } from '@/layout/components/loading/loading.component';
 
 @Component({
   selector: 'app-add-stimulsfot-report',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonModule, TabsModule, DropdownModule, InputTextModule, TextareaModule, CardModule,  CategoryListComponent,SPListComponent, FileUpload,MessageModule, BadgeModule, ChipModule],
+  imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, TextareaModule, CategoryListComponent,SPListComponent, FileUpload,MessageModule, ChipModule,LoadingComponent],
   templateUrl: './add-stimulsfot-report.component.html',
   styleUrl: './add-stimulsfot-report.component.scss',
   providers: [MessageReportService]
@@ -63,6 +64,7 @@ export class AddStimulsfotReportComponent implements OnInit {
   }
   isValid: boolean = true;
   jsonMrt: any;
+  isLoading: boolean = false;
   constructor(private generalService: GeneralService, private storeProcedureService: StoresProcedureService, private messageService: MessageReportService) { 
   }
   lastModified: string = "";
@@ -78,7 +80,6 @@ export class AddStimulsfotReportComponent implements OnInit {
   getClasifications() {
     this.generalService.getReportsByClasification(this.idKatios, "REPORTES").then(x => {
       if(x){
-        console.log(x)
         this.clasificacion = x.CATEGORIA[0].CATEGORIA
       }
     }).catch();
@@ -102,6 +103,10 @@ export class AddStimulsfotReportComponent implements OnInit {
 
 
   validarCampos(): void{
+    if(this.nuevoReporte.nombre && this.nuevoReporte.descripcion && (this.nuevoReporte.adicionales && this.nuevoReporte.adicionales.length>0) && this.nuevoReporte.storedProcedure && this.fileMrt){
+      this.isValid = true;
+      return;
+    }
     if (this.nuevoReporte.nombre == "") {
       this.validations.name.error = true;
       this.validations.name.message = "Falta nombre del reporte";
@@ -125,24 +130,27 @@ export class AddStimulsfotReportComponent implements OnInit {
     }
   }
 
-    //Evento click del boton "crearRepClick"
   crearReporteClick() {
     this.validarCampos();
-    console.log(this.nuevoReporte)
     if (this.isValid) {
+      this.isLoading = true;
       this.generalService.crearReporteNotificacionKatios(this.idKatios, this.nuevoReporte, this.fileMrt).then(r => {
+        this.isLoading = false;
         this.addReport.emit();
         this.messageService.success("Exitoso","Reporte Creado Exitosamente")
-      }).catch(e => this.messageService.error("Error","No se pudo crear reporte"))
+      }).catch(e => {
+        this.isLoading = false;
+        this.messageService.error("Error","No se pudo crear reporte")
+      })
     }
   }
 
   cargarInputReporte() {
-    this.nuevoReporte.nombre = this.inputReporte.Nombre;
-    this.nuevoReporte.descripcion = this.inputReporte.Descripcion;
-    this.nuevoReporte.storedProcedure = this.inputReporte.Data;
-    this.idNotificacion = this.inputReporte.IdNotificacion;
-    this.idReporte = this.inputReporte.IdRep;
+    this.nuevoReporte.nombre = this.inputReporte["@Nombre"];
+    this.nuevoReporte.descripcion = this.inputReporte["@Descripcion"];
+    this.nuevoReporte.storedProcedure = this.inputReporte["@Data"];
+    this.idNotificacion = this.inputReporte["@IdNotificacion"];
+    this.idReporte = this.inputReporte["@IdRep"];
     this.getAdicionalesFromReporte();
     this.getMrt();
   }
@@ -157,12 +165,17 @@ export class AddStimulsfotReportComponent implements OnInit {
   editarReporteClick() {
     this.validarCampos();
     if (this.isValid) {
+      this.isLoading = true;
       this.nuevoReporte["idNotificacion"] = this.idNotificacion;
       this.nuevoReporte["idReporte"] = this.idReporte;
       this.generalService.editarReporteNotificacionKatios(this.idKatios, this.nuevoReporte, this.fileMrt).then(r => {
-      this.editReport.emit();
-      this.messageService.success("Exitoso","Reporte modificado correctamente");
-      }).catch(r=> this.messageService.error("Error","No se pudo modificar el reporte"));
+        this.isLoading = false;
+        this.editReport.emit();
+        this.messageService.success("Exitoso","Reporte modificado correctamente");
+      }).catch(r=> {
+        this.isLoading = false;
+        this.messageService.error("Error","No se pudo modificar el reporte")
+      });
     }
   }
 
@@ -186,7 +199,7 @@ export class AddStimulsfotReportComponent implements OnInit {
   }
 
     getMrt() {
-    this.generalService.getTemplateReport(this.idKatios, this.inputReporte.IdRep).then(rep => {
+    this.generalService.getTemplateReport(this.idKatios, this.inputReporte["@IdRep"]).then(rep => {
       const jsonString = rep.CodeHTML;
       const blob = new Blob([jsonString], { type: 'application/json' });
       const file = new File([blob], 'demo.mrt', { type: 'application/json' });

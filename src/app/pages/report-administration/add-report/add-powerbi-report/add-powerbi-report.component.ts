@@ -11,11 +11,12 @@ import { MessageReportService } from 'src/services/message-report.service';
 import { CategoryListComponent } from '../../category-list/category-list.component';
 import { PBIReport, PBIReportResponse } from 'src/model/PBIReport';
 import { ReportsManagementService } from 'src/services/reports-management.service';
+import { LoadingComponent } from '@/layout/components/loading/loading.component';
 
 @Component({
   selector: 'app-add-powerbi-report',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, TextareaModule,  MessageModule, CategoryListComponent],
+  imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, TextareaModule,  MessageModule, CategoryListComponent,LoadingComponent],
   templateUrl: './add-powerbi-report.component.html',
   styleUrl: './add-powerbi-report.component.scss',
   providers: [MessageReportService]
@@ -51,7 +52,7 @@ export class AddPowerbiReportComponent implements OnInit{
   isValid: boolean = true;
   clasificacion: any;
   inputReporteAdicionales: Array<any> = [];
-
+  isLoading: boolean = false;
 
 
   constructor(private generalService: GeneralService,  private messageService: MessageReportService, private reportManagement: ReportsManagementService) { 
@@ -66,11 +67,11 @@ export class AddPowerbiReportComponent implements OnInit{
   }
 
   cargarInputReporte() {
-    this.nuevoReporte.nombre = this.inputReporte.Nombre;
-    this.nuevoReporte.descripcion = this.inputReporte.Descripcion;
-    this.idNotificacion = this.inputReporte.IdNotificacion;
-    this.idReporte = this.inputReporte.IdRep;
-    this.nuevoReporte.tipoReporte = this.inputReporte.TipoReporte;   
+    this.nuevoReporte.nombre = this.inputReporte["@Nombre"];
+    this.nuevoReporte.descripcion = this.inputReporte["@Descripcion"];
+    this.idNotificacion = this.inputReporte["@IdNotificacion"];
+    this.idReporte = this.inputReporte["@IdRep"];
+    this.nuevoReporte.tipoReporte = this.inputReporte["@TipoReporte"];   
     this.getAdicionalesFromReporte();
     this.getReportData();
   }
@@ -128,7 +129,6 @@ export class AddPowerbiReportComponent implements OnInit{
   getAdicionalesFromReporte() {
     let data = { idNotificacion: this.idNotificacion, idReporte: this.idReporte };
     this.generalService.getReporteAdicionalesById(this.idKatios, data).then(resp => {
-      console.log("input RESPUESTA: ", resp)
       this.inputReporteAdicionales = resp;
     });
   }
@@ -136,8 +136,6 @@ export class AddPowerbiReportComponent implements OnInit{
   getReportData() {
     this.generalService.getTemplateReport(this.idKatios, this.idReporte).then(resp => {
           const reportData = JSON.parse(resp.CodeHTML.trim());
-          this.nuevoReporte.clientId = reportData.clientId;
-          this.nuevoReporte.clientSecret = reportData.clientSecret;
           this.nuevoReporte.groupId = reportData.groupID;
           this.nuevoReporte.reportId = reportData.reportId;
     }).catch();
@@ -146,22 +144,32 @@ export class AddPowerbiReportComponent implements OnInit{
   crearReporteClick() {
     this.validarCampos();
     if (this.isValid) {
+      this.isLoading = true;
       this.reportManagement.crearReportePBI(this.idKatios, this.nuevoReporte).then((r:PBIReportResponse | undefined) => {
+        this.isLoading = false;
         this.addReport.emit();
         this.messageService.success("Exitoso",r?.message)
-      }).catch(e => this.messageService.error("Error","No se pudo crear reporte"))
+      }).catch(e => {
+        this.isLoading = false;
+        this.messageService.error("Error","No se pudo crear reporte")
+      })
     }
   }
 
   editarReporteClick() {
     this.validarCampos();
     if (this.isValid) {
+      this.isLoading = true;
       this.nuevoReporte["idNotificacion"] = this.idNotificacion;
       this.nuevoReporte["idReporte"] = this.idReporte;
       this.reportManagement.editarReportePBI(this.idKatios, this.nuevoReporte).then((r:PBIReportResponse | undefined) => {
+        this.isLoading = false;
         this.editReport.emit();
         this.messageService.success("Exitoso",r?.message);
-      }).catch(r=> this.messageService.error("Error","No se pudo modificar el reporte"));
+      }).catch(r=> {
+        this.isLoading = false;
+        this.messageService.error("Error","No se pudo modificar el reporte")
+      });
     }
   }
 

@@ -1,0 +1,39 @@
+
+<div class="p-3 flex flex-wrap align-items-center align-content-center justify-content-between gap-5 border-1 border-round-lg border-300 shadow-3">
+    <div class="flex align-items-center gap-2">
+        <i class="pi pi-chart-bar text-yellow-800" style="font-size: 1rem;"></i>
+        <p-tag [rounded]="true" value="Power BI" class="bg-yellow-200  text-yellow-800 border-1 border-yellow-800"/>
+    </div>
+    <div class="text-center">
+        <div class="text-sm text-gray-500">Próxima actualización</div>
+        <div class="text-sm font-mono font-bold text-blue-600">
+            {{reproduce ? message : '--:--'}}
+        </div>
+    </div>
+
+   
+    <div class="flex align-items-center gap-1">
+    <p-button  [icon]="reproduce ? 'pi pi-pause' : 'pi pi-play'" variant="outlined" [severity]="reproduce ? 'danger' : 'success'" (click)="cambiarBoton()"/>
+    <p-button
+        icon="pi pi-cog"
+        variant="outlined"
+        class="border-gray-200 text-gray-600 bg-transparent hover:bg-gray-50"
+        (click)="op.toggle($event)"
+        title="Configurar intervalo"
+    ></p-button>
+    <p-popover #op>
+        <div class="flex flex-col gap-3">
+            <label for="interval-input" class="text-base font-medium">Intervalo de actualización (segundos)</label>
+            <p-inputgroup>
+                <p-inputgroup-addon>
+                    <i class="pi pi-clock"></i>
+                </p-inputgroup-addon>
+                <p-inputnumber [(ngModel)]="timerValue" [showButtons]="true" inputId="timer" [min]="120" />
+            </p-inputgroup>
+            
+        </div>
+    </p-popover>
+    </div>
+    
+</div>
+

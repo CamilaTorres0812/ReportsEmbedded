@@ -1,4 +1,5 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { MessageReportService } from 'src/services/message-report.service';
 import { Stimulsoft } from 'stimulsoft-reports-js/Scripts/stimulsoft.viewer';
 
 
@@ -6,7 +7,8 @@ import { Stimulsoft } from 'stimulsoft-reports-js/Scripts/stimulsoft.viewer';
   selector: 'app-stimulsoft',
   imports: [],
   templateUrl: './stimulsoft.component.html',
-  styleUrl: './stimulsoft.component.scss'
+  styleUrl: './stimulsoft.component.scss',
+  providers: [MessageReportService]
 })
 export class StimulsoftComponent implements OnChanges{
   @Input() mrt: string = "";
@@ -14,7 +16,7 @@ export class StimulsoftComponent implements OnChanges{
   viewer: any;
   report: any;
 
-  constructor() {
+  constructor(private messageService: MessageReportService) {
     this.initializeStimulsoft();
   }
 
@@ -34,7 +36,6 @@ export class StimulsoftComponent implements OnChanges{
 "DXrBfUcYISTpE2+XZwDqf2RIFQWr8+C9SYWdlvM/5DLDV1ZD46o5Kwv2Zf3C7BBoMnzusSuiYYNaNs9Zt2vw+/kfKa" + 
 "kEWdt36YMVj3hqrMO6PKR+0/Msl5ULllsMdilmz5i5GJsHskKrECcq98CJwCtUCoQm17ktIIlndaDf4kVT4EOdgo/1" + 
 "Q2Fmg3HEvVXv8oix5ChtOfCeFHmn05NPA5HqIT54arp7Y1rWGg2zAk6qj8DRj4rk/NZk4yhS1QmTQKo=";
-console.log("Licencia: ", Stimulsoft.Base.StiLicense.Key);
     this.viewer = new Stimulsoft.Viewer.StiViewer(undefined, 'StiViewer', false);
     this.report = Stimulsoft.Report.StiReport.createNewReport();
   }
@@ -42,7 +43,6 @@ console.log("Licencia: ", Stimulsoft.Base.StiLicense.Key);
   private async loadReport(): Promise<void> {
     try {
       const mrtJson = typeof this.mrt === 'string' ? this.mrt : JSON.stringify(this.mrt);
-      console.log("MRT", mrtJson)
       this.report.load(mrtJson);
       
       //Registrar los datos
@@ -61,6 +61,7 @@ console.log("Licencia: ", Stimulsoft.Base.StiLicense.Key);
       this.viewer.renderHtml("viewerContent");
       
     } catch (error) {
+      this.messageService.error("Error","No se pudo cargar el reporte");
       console.error('Error loading report:', error);
     }
   }

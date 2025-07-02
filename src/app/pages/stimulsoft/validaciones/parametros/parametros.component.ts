@@ -4,13 +4,15 @@ import { FormsModule } from '@angular/forms';
 import { Dropdown, DropdownModule } from 'primeng/dropdown';
 import { SelectModule } from 'primeng/select';
 import { GeneralService } from 'src/services/general.service';
+import { MessageReportService } from 'src/services/message-report.service';
 
 @Component({
   selector: 'app-parametros',
   standalone: true,
   imports: [CommonModule,DropdownModule, FormsModule, SelectModule],
   templateUrl: './parametros.component.html',
-  styleUrl: './parametros.component.scss'
+  styleUrl: './parametros.component.scss',
+  providers: [MessageReportService]
 })
 export class ParametrosComponent {
   @Input() aplicaIdKatios: any;
@@ -23,7 +25,7 @@ export class ParametrosComponent {
   public opcionSeleccionada: any;
 
   constructor(
-    private generalService: GeneralService
+    private generalService: GeneralService, private messageService: MessageReportService
   ) { }
 
   ngOnInit(): void {
@@ -40,6 +42,9 @@ export class ParametrosComponent {
         if (!Array.isArray(res.TBLParametros)) res.TBLParametros = [res.TBLParametros]
         this.oParametros = res.TBLParametros;
         if (this.oParametros && this.valorSeleccionado) this.opcionSeleccionada = this.oParametros.find((x: any) => x.Nivel == this.valorSeleccionado || x.Descripcion == this.valorSeleccionado)
+      }).catch(error => {
+        this.messageService.error("Error","No se pudo cargar el reporte");
+        console.error(error);
       })
   }
 

@@ -2,9 +2,10 @@
     <div class="self-center mt-auto mb-auto">
         <p-card class="text-center">
             <div class="pages-header px-3 py-1 text-3xl font-bold mb-3">
-                <h2>PBIEmbedded</h2>
+                <h2>Reports Embedded</h2>
             </div>
             <span class="text-2xl font-semibold mt-2">Bienvenido</span>
+            <p-message *ngIf="invalidCredentials" variant="outlined" severity="error" icon="pi pi-times-circle" styleClass="mb-2">Credenciales inválidas</p-message>
             <form class="flex flex-col gap-4 px-3 input-panel mt-3" [formGroup]="loginKatiosForm" autocomplete="off">
                 <p-inputgroup>
                     <p-inputgroup-addon>

@@ -25,7 +25,6 @@ import { PaginationReportComponent } from './pagination-report/pagination-report
 import { PaginatorModule,PaginatorState } from 'primeng/paginator';
 import { SelectModule } from 'primeng/select';
 import { ReportsManagementService } from 'src/services/reports-management.service';
-import { PanelModule } from 'primeng/panel';
 interface AutoCompleteCompleteEvent {
     originalEvent: Event;
     query: string;
@@ -33,7 +32,7 @@ interface AutoCompleteCompleteEvent {
 @Component({
   selector: 'app-report-administration',
   standalone: true,
-  imports: [CommonModule,DialogModule, ButtonModule, FormsModule, TreeModule,Tag, AddReportComponent, DownloadDataComponent,EditReportComponent,DeleteReportComponent,AutoCompleteModule,PaginatorModule, SelectModule,PanelModule],
+  imports: [CommonModule,DialogModule, ButtonModule, FormsModule, TreeModule,Tag, AddReportComponent, DownloadDataComponent,EditReportComponent,DeleteReportComponent,AutoCompleteModule,PaginatorModule, SelectModule],
   templateUrl: './report-administration.component.html',
   styleUrl: './report-administration.component.css',
   providers: [MessageReportService]
@@ -55,16 +54,17 @@ export class ReportAdministrationComponent {
   selectedReport: any;
   nodoSeleccionado: any;
   filteredReports: any[] = [];
-  first2: number = 0;
+  first2: number = 1;
 
-  rows2: number = 6;
+  rows2: number = 10;
 
   totalRecords: number = 120;
 
   options = [
-      { label: 6, value: 6 },
-      { label: 12, value: 12 },
-      { label: 24, value: 24 }
+      { label: 5, value: 5 },
+      { label: 10, value: 10 },
+      { label: 20, value: 20 },
+      { label: 120, value: 120 }
   ];
 
   constructor(private generalService: GeneralService,
@@ -116,7 +116,6 @@ export class ReportAdministrationComponent {
       for (var i = 0; i < dataWO.length; i++) {
         var oDataUno: TreeNode;
         oDataUno = this.AddTreeNode(dataWO[i]);
-        console.log(dataWO[i]);
         if (dataWO[i].CATEGORIA.length && dataWO[i].CATEGORIA.length > 0) {
           this.GenerateTreeNode(dataWO[i].CATEGORIA, oDataUno);
         }
@@ -148,13 +147,11 @@ export class ReportAdministrationComponent {
    * @param iFiltros variable de Filtros a aplicar
    */
   public aplicarFiltros( ) {
-    const limInf = this.first2 + 1;
     const limSup = this.first2 + this.rows2;
-    var data = { "ndoc":this.NDOC, "tdoc": this.TDOC,"inf": limInf, "sup": limSup };
-    this.reportsManagement.getReportsByFilter(this.idKatios, data,this.Filtros).then(resp => {
-      if (resp && resp.Reportes) {
-        console.log(resp)
-        this.ListReportes = resp.Reportes;
+    var Filtros = { "Filtros": JSON.stringify({ "Filtros": this.Filtros }), "ndoc":this.NDOC, "tdoc": this.TDOC };
+    this.generalService.getReportsByFilter(this.idKatios, 'otro', Filtros).then(resp => {
+      if (resp && resp.RESPUESTA) {
+        this.ListReportes = resp.RESPUESTA.nxk;
       } else {
         this.ListReportes = [];
       }
@@ -168,7 +165,7 @@ export class ReportAdministrationComponent {
   }
 
   descargarMrtClick(reporte: any) {
-    this.generalService.getTemplateReport(this.idKatios, reporte.IdRep).then(rep => {
+    this.generalService.getTemplateReport(this.idKatios, reporte["@IdRep"]).then(rep => {
       this.descargarArchivoMrt(rep.CodeHTML, "DataMrt")
     }).catch(r=>this.messageService.error("Error",'No se pudo descargar el reporte'));
   }
@@ -185,8 +182,8 @@ export class ReportAdministrationComponent {
   }
 
   showReport(reporte:any){
-    const idRep = reporte.IdRep;
-    const tipoReporte = reporte.TipoReporte;
+    const idRep = reporte["@IdRep"];
+    const tipoReporte = reporte["@TipoReporte"];
     if(tipoReporte !== "PBI"){
       this.router.navigateByUrl(`admin/STI/${idRep}`);
     }else{
@@ -202,7 +199,7 @@ export class ReportAdministrationComponent {
         } else{
             for (let i = 0; i < (this.ListReportes as any[]).length; i++) {
               let report = (this.ListReportes as any[])[i];
-              if (report.Nombre.toLowerCase().indexOf(query.toLowerCase()) == 0) {
+              if (report["@Nombre"].toLowerCase().indexOf(query.toLowerCase()) == 0) {
                   filtered.push(report);
               }
             }
@@ -211,16 +208,8 @@ export class ReportAdministrationComponent {
         
     }
     onPageChange2(event: PaginatorState) {
-        this.first2 = event.first ?? 0;
+        this.first2 = event.first ?? 1;
         this.rows2 = event.rows ?? 6;
-        console.log(this.first2,this.rows2,this.first2+this.rows2);
-        this.aplicarFiltros();
-    }
-    cambiarPagina(){
-      this.first2 = 0;
-      console.log(this.Filtros)
-      this.aplicarFiltros();
-      console.log("cambio")
     }
  
 }

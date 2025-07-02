@@ -8,12 +8,12 @@ export class TimerService {
   private elapsedMs = 0;
   private intervalSub?: Subscription;
   private tickSub?: Subscription;
-
+  private lastRefresh = '';
   private refreshSubject = new Subject<{isPaused: boolean; interval:number}>();
   refreshState$ = this.refreshSubject.asObservable();
 
   message$ = new BehaviorSubject<string>('');
-  isMessageVisible$ = new BehaviorSubject<boolean>(false);
+  lastDate$ = new BehaviorSubject<string>('');
 
   setRefreshInterval(isPaused: boolean, interval:number){
     this.elapsedMs = 0;
@@ -27,18 +27,16 @@ export class TimerService {
 
     this.intervalSub = interval(intervalTime).subscribe(() => {
       reportCallback();
+      let lastRefreshDate = new Date();
+      this.lastRefresh = lastRefreshDate.toLocaleString();
+      this.lastDate$.next(this.lastRefresh);
       this.elapsedMs = 0;
     });
 
     this.tickSub = interval(1000).subscribe(() => {
       this.elapsedMs += 1000;
       const timeLeft = intervalTime - this.elapsedMs;
-       this.message$.next(`Se actualizará en ${Math.ceil(timeLeft/1000)} s`);
-      if(timeLeft <= 5000 && timeLeft > 0){
-        this.isMessageVisible$.next(true);
-      }else{
-        this.isMessageVisible$.next(false);
-      }
+       this.message$.next(`${Math.ceil(timeLeft/1000)} s`);
     });
   }
 
@@ -46,7 +44,7 @@ export class TimerService {
     console.log("se pauso")
     this.intervalSub?.unsubscribe();
     this.tickSub?.unsubscribe();
-    this.isMessageVisible$.next(false);
+    this.lastDate$.next(this.lastRefresh);
   }
 
   getElapsedSeconds(): number {

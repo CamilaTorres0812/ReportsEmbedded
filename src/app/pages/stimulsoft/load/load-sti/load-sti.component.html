@@ -1,17 +1,15 @@
 <app-loading *ngIf="isLoading" reportType = "STI"></app-loading>
 
 
-<p-panel [showHeader]="false">
-  <p-dialog [modal]="true" header="Parámetros" [(visible)]="displayValidaciones">
-    <app-validaciones-sti [IDKatios]="idKatios" [validaciones]="jsonAtributos"
-        (crearProcesoEA)="crearProcesoEA($event)" [autoGenerar]="autoGenerar" [loged_user]="loged_user">
-    </app-validaciones-sti>
-  </p-dialog>
+<p-dialog [modal]="true" header="Parámetros" [(visible)]="displayValidaciones" [style]="{ width: '30rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+  <app-validaciones-sti [IDKatios]="idKatios" [validaciones]="jsonAtributos"
+      (crearProcesoEA)="crearProcesoEA($event)" [autoGenerar]="autoGenerar" [loged_user]="loged_user">
+  </app-validaciones-sti>
+</p-dialog>
 
-    <div style="min-height: 90vh; margin-top:.5rem;">
-        <app-stimulsoft style="min-height: inherit;" *ngIf="displayStimulsoftReport" [mrt]="mrt" [data]="data"></app-stimulsoft>
-    </div>
-</p-panel>
+<div style="min-height: 90vh; margin-top:.5rem;">
+    <app-stimulsoft style="min-height: inherit;" *ngIf="displayStimulsoftReport" [mrt]="mrt" [data]="data"></app-stimulsoft>
+</div>
 
 
 

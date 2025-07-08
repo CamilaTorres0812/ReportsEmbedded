@@ -31,15 +31,15 @@
       [eventHandlers]="eventHandlersMap"
       >
     </powerbi-report>
-    <p-tabs *ngIf = "pages.length > 0" [value]="activeTabIndex" (valueChange)="onTabChanged($event)" scrollable>
-    <p-tablist>
-        @for (page of pages; track $index) {
-            <p-tab [value]="$index">
-              <i class="pi pi-chart-line"></i>
-              <span>{{ page.displayName }}</span>
-            </p-tab>
-        }
-    </p-tablist>
-</p-tabs>
+      <p-tabs *ngIf = "pages.length > 0" [value]="activeTabIndex" (valueChange)="onTabChanged($event)" scrollable>
+        <p-tablist>
+            @for (page of pages; track $index) {
+                <p-tab [value]="$index">
+                  <i class="pi pi-chart-line"></i>
+                  <span>{{ page.displayName }}</span>
+                </p-tab>
+            }
+        </p-tablist>
+      </p-tabs>
 </div>
 

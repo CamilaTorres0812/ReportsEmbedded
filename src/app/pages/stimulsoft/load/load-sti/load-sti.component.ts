@@ -61,7 +61,8 @@ export class LoadSTIComponent implements OnInit{
               this.callValidaciones(this.infoReporte);
             })
             .catch(err => {
-              console.log(err)
+              this.messageService.error("Error","No se pudo cargar el reporte");
+              console.error(err)
             })
       } catch (error) {
         this.messageService.error("Error","No se pudo cargar el reporte");

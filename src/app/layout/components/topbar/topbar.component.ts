@@ -42,9 +42,9 @@ import { Avatar } from 'primeng/avatar';
     InputIconModule,
     IftaLabelModule, Avatar],
   template: `<div class="layout-topbar-start">
-    <a class="layout-topbar-logo" routerLink="/">
+    <div class="layout-topbar-logo">
         <img id="app-logo" [src]="imageUrl" alt="ultima-layout" style="height: 2.25rem">
-    </a>
+    </div>
     <a #menuButton class="layout-menu-button" (click)="onMenuButtonClick()">
         <i class="pi pi-chevron-right"></i>
     </a>
@@ -55,14 +55,14 @@ import { Avatar } from 'primeng/avatar';
     </div>
 
     <div class="layout-topbar-end text-center">
-    <p class="mx-auto">Versión: 25.07.07.0</p>
+    <p class="mx-auto">Versión: 25.07.08.0</p>
     <div class="layout-topbar-actions-end">
         <ul class="layout-topbar-items">
             <li>
                 <a pStyleClass="@next" enterFromClass="hidden" enterActiveClass="animate-scalein" leaveToClass="hidden" leaveActiveClass="animate-fadeout" [hideOnOutsideClick]="true">
                     <p-avatar [label]="label" [style]="{ 'background-color': '#ece9fc', color: '#2a1261' }" shape="circle" />
                 </a>
-                <div class="hidden">
+                <div class="hidden" *ngIf="!isTokenLogin">
                     <ul class="list-none p-0 m-0">
                         <li (click) = "finSesion()">
                             <a class="cursor-pointer flex items-center hover:bg-emphasis duration-150 transition-all px-4 py-2" pRipple>
@@ -92,6 +92,7 @@ export class TopbarComponent {
   isVisible: boolean = false;
   layoutService = inject(LayoutService);
   label: string = '';
+  isTokenLogin: boolean = false;
 
     @ViewChild('menuButton') menuButton!: ElementRef<HTMLButtonElement>;
 
@@ -105,13 +106,10 @@ export class TopbarComponent {
     ngOnInit(): void {
         this.usuarioSesion = this.sesionWE8.getDataUserM3SinHubM3();
         this.idKatios = this.usuarioSesion.IDKATIOS.trim();
+        this.isTokenLogin = sessionStorage.getItem('authType') === 'token';
         this.imageUrl = `https://nukak.tecfinanzas.com/Storage/Images/${this.idKatios}/logo.png`;
         this.label = this.usuarioSesion.NDOC[0].toUpperCase();
-
     }
-
-
-
 
     finSesion(){
     this.personasService.cerrarSesion();

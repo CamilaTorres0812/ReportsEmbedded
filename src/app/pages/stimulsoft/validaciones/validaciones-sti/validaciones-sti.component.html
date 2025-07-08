@@ -1,9 +1,9 @@
 
 <div *ngFor="let val of validaciones">
-    <div class="field grid">
+    <div class="flex items-center justify-content-between p-2">
             <ng-container [ngSwitch]="val.CAMPO">
-                <label [for]="val.NOMBRE" class="col-12 mb-2 md:col-2 md:mb-0">{{val.NOMBRE}}</label>
-                <div class="col-12 md:col-10">
+                <label [for]="val.NOMBRE" *ngIf="val.NOMBRE !== 'RETORNAR_JSON'">{{val.NOMBRE}}</label>
+                <div class="w-8">
                     <input *ngSwitchCase="'TEXT'" type="text" pInputText [id]="val.NOMBRE" [(ngModel)]="val.VALOR" [disabled]="val.DISABLED == 1" class="w-full"/>
                     <p-datepicker *ngSwitchCase="'DATE'" [id]="val.NOMBRE" [showIcon]="true" [(ngModel)]="val.VALOR" [disabled]="val.DISABLED == 1"
                         dateFormat="yy-mm-dd"  [appendTo]="'body'"></p-datepicker>
@@ -32,7 +32,7 @@
             </ng-container>
     </div>
 </div>
-<div class="flex justify-content-center">
+<div class="flex justify-content-center mt-2">
 <p-button label="Generar" (onClick)="generar()"></p-button>
 </div>
    

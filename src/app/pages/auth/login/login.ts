@@ -69,6 +69,7 @@ export class Login {
       TipoAuth: [this.typeTRX]
     });
   }
+  loading: boolean = false;
 
   ngOnInit(): void {
     const idKatiosUrl = this.route.snapshot.paramMap.get('idKatios');
@@ -79,17 +80,18 @@ export class Login {
   }
 
   login() {
+    this.loading = true;
     this.personasService.loginTCI(this.loginKatiosForm.value.idKatios, this.loginKatiosForm.value)
       .subscribe(res => {
         this.sessionService.setDataUserM3SinHubM3(res);
-        console.log("Respuesta del login", res);
         this.router.navigateByUrl('/admin');
         this.cargaInicial();
       }, err => {
         if(err.status === 400){
           this.invalidCredentials = true;
         }
-        console.error(JSON.parse(err.error?.Message).Descripcion);
+        console.error(err);
+        this.loading = false;
       });
   }
 
@@ -106,12 +108,11 @@ export class Login {
     this.personasService.loginTCIToken(idKatios, token)
       .subscribe(
         res => {
-          console.log("RESPUESTA LOGIN CON TOKEN: ", res)
           this.sessionService.setDataUserM3SinHubM3(res);
           this.router.navigateByUrl('/admin');
         },
         err => {
-          Swal.fire('Error!', JSON.parse(err.error?.Message).Descripcion, 'error');
+          console.error(err);
         }
       );
   }

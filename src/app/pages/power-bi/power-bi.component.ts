@@ -20,12 +20,14 @@ import { PanelModule } from 'primeng/panel';
 import { TimerComponent } from './timer/timer.component';
 import { Tooltip } from 'primeng/tooltip';
 import { MessageReportService } from 'src/services/message-report.service';
+import { SelectModule } from 'primeng/select';
+import { SelectButton } from 'primeng/selectbutton';
 
 
 @Component({
   selector: 'app-power-bi',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PowerBIEmbedModule,LoadingComponent,TabsModule,PanelModule,TimerComponent,ButtonModule,Tooltip],
+  imports: [CommonModule, FormsModule, RouterModule, PowerBIEmbedModule,LoadingComponent,TabsModule,PanelModule,TimerComponent,ButtonModule,Tooltip, SelectButton],
   templateUrl: './power-bi.component.html',
   styleUrls: ['./power-bi.component.css'],
   providers: [MessageReportService]
@@ -71,7 +73,11 @@ export class PowerBIComponent implements OnInit, OnDestroy {
   reportInfo: any;
   state: boolean = false;
   lastDate: string = '';
-  view: string = 'Desktop';
+  view: any = { icon: 'pi pi-desktop', view: 'Desktop' };
+  views: any[] = [
+        { icon: 'pi pi-mobile', view: 'Mobile' },
+        { icon: 'pi pi-desktop', view: 'Desktop' }
+    ];
   
   eventHandlersMap = new Map ([
     ['loaded', async () => {
@@ -312,10 +318,9 @@ ngOnDestroy(): void {
   changeState(state: boolean){
     this.state = state;
   }
-  changeView(){
+  changeView(event: any){
     let newSettings: models.ISettings;
-    this.view = this.view === "Mobile" ? "Desktop" : "Mobile";
-    if(this.view === "Mobile" && this.hasMobileView){
+    if(this.view.view === "Mobile" && this.hasMobileView){
       newSettings = {
           layoutType: models.LayoutType.MobilePortrait
       };

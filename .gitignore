@@ -1,0 +1,55 @@
+# Angular / Node
+node_modules/
+dist/
+tmp/
+out-tsc/
+
+# Build output
+build/
+coverage/
+.vscode/
+
+# Environment files
+src/environments/*.ts
+!.env
+.env.*
+
+# Angular cache
+.angular/
+
+# IDEs y editores
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Logs y temporales
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Compilados de pruebas
+test-results/
+
+# Browserslist cache
+.browserslistrc
+.browserslistrc.local
+
+# Storybook (si se usa)
+.storybook-out/
+
+# VSCode settings opcionales
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/settings.json
+!.vscode/tasks.json

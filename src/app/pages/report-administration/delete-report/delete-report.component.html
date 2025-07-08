@@ -1,2 +1,20 @@
-<p-confirmdialog />
-<p-button  (click)="confirm($event)" icon="pi pi-trash" variant="outlined" size="small" severity="danger"></p-button>
+<p-button  (click)="openDialogConfirmation()" icon="pi pi-trash" variant="outlined" size="small" severity="danger"/>
+<p-dialog header="Eliminar reporte" [(visible)]="openConfirmation" [style]="{ width: '400px' }" [modal]="true">
+    <div class="flex flex-column gap-2">
+        <span>El siguiente reporte se eliminará permanentemente: </span>
+        <div class="flex items-center justify-center gap-2 mx-auto">
+            <div class="border-round border-1 flex align-items-center justify-content-center p-2" [ngClass]="reporte['@TipoReporte'] === 'PBI' ? 'bg-yellow-300 border-yellow-700' : 'bg-blue-300 border-blue-700'">
+                <i [ngClass]="reporte['@TipoReporte'] === 'PBI' ? 'pi pi-chart-bar text-yellow-700' : 'pi pi-file text-blue-700'"></i>
+            </div>
+            <p class="font-semibold" [ngClass]="reporte['@TipoReporte'] === 'PBI' ? 'text-yellow-700' : 'text-blue-700'">{{reporte['@Nombre']}}</p>
+            <p-button [icon]="isCopy ? 'pi pi-check' : 'pi pi-copy'" [rounded]="true" [text]="true" size="large" (onClick)="copyReportName(reporte['@Nombre'])"/>
+        </div>
+        <span class="font-bold">Escriba el nombre del reporte para confirmar la eliminación</span>
+        <input type="text" pInputText [(ngModel)]="confirmationName" />
+    </div>
+    
+    <ng-template #footer>
+        <p-button label="Cancelar" (click)="closeConfirmation()" severity="secondary" />
+        <p-button label="Eliminar" (click)="deleteAReport()" severity="danger" [disabled] = "!(confirmationName === reporte['@Nombre'])" />
+    </ng-template>
+</p-dialog>

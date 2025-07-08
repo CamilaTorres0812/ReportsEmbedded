@@ -127,7 +127,6 @@ export class MenuItemComponent implements OnInit{
 
     ngOnInit() {
         this.key = this.parentKey ? this.parentKey + '-' + this.index : String(this.index);
-
         if (!(this.isSlimPlus() || this.isSlim() || this.isHorizontal()) && this.item.routerLink) {
             this.updateActiveStateFromRoute();
         }

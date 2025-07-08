@@ -19,6 +19,7 @@ import { ToastModule } from 'primeng/toast';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { IftaLabelModule } from 'primeng/iftalabel';
+import { Avatar } from 'primeng/avatar';
 @Component({
   selector: '[app-topbar]',
   standalone: true,
@@ -39,7 +40,7 @@ import { IftaLabelModule } from 'primeng/iftalabel';
     ToastModule,
     IconFieldModule,
     InputIconModule,
-    IftaLabelModule],
+    IftaLabelModule, Avatar],
   template: `<div class="layout-topbar-start">
     <a class="layout-topbar-logo" routerLink="/">
         <img id="app-logo" [src]="imageUrl" alt="ultima-layout" style="height: 2.25rem">
@@ -54,12 +55,12 @@ import { IftaLabelModule } from 'primeng/iftalabel';
     </div>
 
     <div class="layout-topbar-end text-center">
-    <p class="mx-auto">Versión: 25.06.12.0</p>
+    <p class="mx-auto">Versión: 25.07.07.0</p>
     <div class="layout-topbar-actions-end">
         <ul class="layout-topbar-items">
             <li>
                 <a pStyleClass="@next" enterFromClass="hidden" enterActiveClass="animate-scalein" leaveToClass="hidden" leaveActiveClass="animate-fadeout" [hideOnOutsideClick]="true">
-                    <img src="./images/avatar/icons8-male-user-48.png" alt="avatar" class="w-12 h-10" />
+                    <p-avatar [label]="label" [style]="{ 'background-color': '#ece9fc', color: '#2a1261' }" shape="circle" />
                 </a>
                 <div class="hidden">
                     <ul class="list-none p-0 m-0">
@@ -90,6 +91,7 @@ export class TopbarComponent {
   message: string = '';
   isVisible: boolean = false;
   layoutService = inject(LayoutService);
+  label: string = '';
 
     @ViewChild('menuButton') menuButton!: ElementRef<HTMLButtonElement>;
 
@@ -104,6 +106,8 @@ export class TopbarComponent {
         this.usuarioSesion = this.sesionWE8.getDataUserM3SinHubM3();
         this.idKatios = this.usuarioSesion.IDKATIOS.trim();
         this.imageUrl = `https://nukak.tecfinanzas.com/Storage/Images/${this.idKatios}/logo.png`;
+        this.label = this.usuarioSesion.NDOC[0].toUpperCase();
+
     }
 
 
@@ -122,6 +126,7 @@ export class TopbarComponent {
     onTopbarMenuToggle() {
         this.layoutService.layoutState.update((val) => ({ ...val, topbarMenuActive: !val.topbarMenuActive }));
     }
+
 
 }
 

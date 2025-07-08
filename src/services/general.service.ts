@@ -35,31 +35,43 @@ export class GeneralService {
             res = res.split("DESCRIPCION").join("label");
             res = res.split("OPCION").join("items");
             res = JSON.parse(res);
-            this.recursivaMenu(res.MENU);
+            this.prepararMenu(res.MENU);
             return res;
         })
         .then((res: any) => <MenuItem[]>res.MENU.items)
-        .then(data => { return data; })
-    }
-    public recursivaMenu(opcion: any) {
-        if (opcion !== undefined && opcion != null) {
-            if (opcion.length === undefined && opcion.items !== undefined && opcion.items !== null && opcion.items.length === undefined) {
-                opcion.items = new Array<any>(opcion.items);
-            } else {
-                if (opcion.length !== undefined) {
-                    for (let i = 0; i < opcion.length; i++) {
-                        this.recursivaMenu(opcion[i]);
-                    }
-                } else {
-                    if (opcion.items !== undefined && opcion.items.length !== undefined) {
-                        for (let i = 0; i < opcion.items.length; i++) {
-                            this.recursivaMenu(opcion.items[i]);
-                        }
-                    }
-                }
-            }
+        .then(data => data);
+}
+
+    public prepararMenu(opcion: any): void {
+    if (!opcion) return;
+
+    if (Array.isArray(opcion)) {
+        opcion.forEach(op => this.prepararMenu(op));
+    } else {
+        // Asignar routerLink si LINK tiene el parámetro Componente
+        const link = opcion.LINK || '';
+        const match = link.match(/Componente=([^&]+)/);
+        if (match) {
+            opcion.routerLink = decodeURIComponent(match[1]);
+        }
+
+        // Convertir ítems únicos a arreglo
+        if (opcion.items && !Array.isArray(opcion.items)) {
+            opcion.items = [opcion.items];
+        }
+
+        // Si items está vacío, eliminarlo para permitir navegación directa
+        if (opcion.items && opcion.items.length === 0) {
+            delete opcion.items;
+        }
+
+        // Recursividad en hijos
+        if (opcion.items) {
+            this.prepararMenu(opcion.items);
         }
     }
+}
+    
 
     async getReportesByTipo(idkatios: string, params: any) {
     return this.http.get(`${API}ReporteBI/GetReportesByTipo/${idkatios}`, { params })

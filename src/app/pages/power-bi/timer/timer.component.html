@@ -1,25 +1,19 @@
 
-<div class="p-3 flex flex-wrap align-items-center align-content-center justify-content-between gap-5 border-1 border-round-lg border-300 shadow-3">
-    <div class="flex align-items-center gap-2">
-        <i class="pi pi-chart-bar text-yellow-800" style="font-size: 1rem;"></i>
-        <p-tag [rounded]="true" value="Power BI" class="bg-yellow-200  text-yellow-800 border-1 border-yellow-800"/>
-    </div>
-    <div class="text-center">
-        <div class="text-sm text-gray-500">Próxima actualización</div>
-        <div class="text-sm font-mono font-bold text-blue-600">
+<div class="flex flex-wrap align-items-center align-content-center gap-2">
+    <div class="flex items-center gap-2 border-1 border-round-lg border-300 p-2">
+        <i class="pi pi-stopwatch sm:text-sm"></i>
+        <span class="text-base font-medium sm:text-sm ">
             {{reproduce ? message : '--:--'}}
-        </div>
+        </span>
     </div>
-
-   
-    <div class="flex align-items-center gap-1">
-    <p-button  [icon]="reproduce ? 'pi pi-pause' : 'pi pi-play'" variant="outlined" [severity]="reproduce ? 'danger' : 'success'" (click)="cambiarBoton()"/>
+    <p-button  [icon]="reproduce ? 'pi pi-pause' : 'pi pi-play'" variant="outlined" [severity]="reproduce ? 'danger' : 'success'" (click)="cambiarBoton()" size="small"/>
     <p-button
         icon="pi pi-cog"
         variant="outlined"
         class="border-gray-200 text-gray-600 bg-transparent hover:bg-gray-50"
         (click)="op.toggle($event)"
         title="Configurar intervalo"
+        size="small"
     ></p-button>
     <p-popover #op>
         <div class="flex flex-col gap-3">
@@ -32,8 +26,6 @@
             </p-inputgroup>
             
         </div>
-    </p-popover>
-    </div>
-    
+    </p-popover> 
 </div>
 

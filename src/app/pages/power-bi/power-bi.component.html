@@ -1,61 +1,25 @@
 <app-loading *ngIf="isLoading" reportType = "PBI"></app-loading>
-
-<p-panel [toggleable]="true" *ngIf="reportObj">
+<p-panel [toggleable]="true" [collapsed]="true" *ngIf="reportObj">
   <ng-template #header>
-    <div class="flex items-center gap-2">
-        <i class="pi pi-file-check text-lg"></i>
-        <span class="font-bold text-lg">{{reportInfo.Descripcion}}</span>
-    </div>
+    <span class="font-semibold text-sm md:text-lg">{{reportInfo.Descripcion}}</span>
   </ng-template>
-  <ng-template #footer>
-    <div class="flex align-items-center justify-content-between">
-            <div class="grid grid-nogutter md:grid-cols-3 gap-4 text-sm">
-                <div>
-                    <span class="font-medium">Vista:</span>
-                    <div class="flex flex-row align-items-center gap-1">
-                        <i [ngClass] = "view === 'Mobile' ? 'pi pi-mobile' : 'pi pi-desktop'" style="font-size: 1rem"></i>
-                        <p>{{view}}</p>
-                    </div>
-                </div>
-
-                <div>
-                    <span class="font-medium">Estado:</span>
-                    <div class="flex flex-row align-items-center gap-1">
-                        <i [class]="state ? 'pi pi-play-circle text-green-500' : 'pi pi-pause-circle text-orange-500'" style="font-size: 1rem"></i>
-                        <p [ngClass]="state ? 'text-green-500' : 'text-orange-500'">{{state ? 'Activo' : 'Pausado'}}</p>
-                    </div>
-                </div>
-
-                <div>
-                    <span class="font-medium">Última actualización:</span>
-                    <div class="flex flex-row align-items-center gap-1">
-                        <i class="pi pi-calendar-clock" style="font-size: 1rem"></i>
-                        <p>{{lastDate ? lastDate : 'Sin actualizar'}}</p>
-                    </div>
-                    
-                </div>
-            </div>
-            <p-button 
-            label="Cambiar vista" 
-            [icon]="view === 'Mobile' ? 'pi pi-mobile' : 'pi pi-desktop'" 
-            severity="primary" 
-            variant="outlined" 
-            (click)="changeView()"
-            [disabled]="!isMobile || !hasMobileView"
-            [pTooltip]="tooltip"
-            tooltipPosition="bottom" />
-            <ng-template  #tooltip>
-              <div class="flex items-start gap-1">
-                <i class="pi pi-exclamation-circle" style="font-size: 1.5rem"></i>
-                <span> {{isMobile && !hasMobileView ? 'Este informe no dispone de una versión adaptada a móviles.' : 'La vista para móviles solo puede visualizarse desde un dispositivo móvil.'}} </span>
-              </div>
-        </ng-template>
+  <div class="flex items-center justify-content-between flex-row-reverse">
+    <div class="flex items-center">
+      <p-selectbutton  (onChange)="changeView($event)" [options]="views" [(ngModel)]="view" optionLabel="view" [disabled]="!isMobile || !hasMobileView" [pTooltip]="tooltip" tooltipPosition="bottom">
+          <ng-template #item let-item>
+                <i [class]="item.icon"></i>
+            </ng-template>
+        </p-selectbutton>
+      
+        <ng-template  #tooltip>
+          <div class="flex items-start gap-1">
+            <i class="pi pi-exclamation-circle" style="font-size: 1.5rem"></i>
+            <span> {{isMobile && !hasMobileView ? 'Este informe no dispone de una versión adaptada a móviles.' : 'La vista para móviles solo puede visualizarse desde un dispositivo móvil.'}} </span>
+          </div>
+      </ng-template>
     </div>
-  </ng-template>
-  <div>
     <app-timer (changeState) = "changeState($event)"></app-timer>
   </div>
-  
 </p-panel>
 
 
@@ -67,8 +31,7 @@
       [eventHandlers]="eventHandlersMap"
       >
     </powerbi-report>
-</div>
-<p-tabs *ngIf = "pages.length > 0" [value]="activeTabIndex" (valueChange)="onTabChanged($event)">
+    <p-tabs *ngIf = "pages.length > 0" [value]="activeTabIndex" (valueChange)="onTabChanged($event)" scrollable>
     <p-tablist>
         @for (page of pages; track $index) {
             <p-tab [value]="$index">
@@ -78,3 +41,5 @@
         }
     </p-tablist>
 </p-tabs>
+</div>
+

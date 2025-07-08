@@ -1,4 +1,5 @@
 
+<div class="pr-2 pl-2 pb-2">
 <div class="p-3 border-bottom-1 border-300">
   <div class="flex justify-content-between align-items-center">
     <div>
@@ -13,13 +14,13 @@
     </div>
   </div>
 </div>
-<p-tree [value]="oData" selectionMode="single"  (onNodeSelect)="nodeSelect($event.node)"></p-tree>
-<div class="flex">
+<p-tree [value]="oData" selectionMode="single"  (onNodeSelect)="nodeSelect($event.node)" styleClass="w-[30rem]"></p-tree>
+<!--<div class="flex">
   <p-autocomplete [(ngModel)]="selectedReport" [suggestions]="filteredReports" (completeMethod)="filterReport($event)" optionLabel="@Nombre" />
-</div>
+</div>-->
 
-<div class="grid p-5">
-  <div class="col-12 md:col-6 lg:col-4" *ngFor="let report of filteredReports">
+<div class="grid">
+  <div class="col-12 md:col-6 lg:col-4" *ngFor="let report of ListReportes">
       <div class="border-round-lg border-1 border-solid border-gray-300 shadow-1 p-0 hover:shadow-5 transition-colors transition-duration-200">
         <div class="p-3 border-top-3 border-solid border-round-lg w-full h-full" [ngClass] = "report['@TipoReporte'] === 'PBI' ? 'border-yellow-200' : 'border-blue-200'">
             <div class="mb-2">
@@ -44,7 +45,7 @@
     </div>
   </div>
 </div>
-<app-pagination-report></app-pagination-report>
+</div>
  
 
 

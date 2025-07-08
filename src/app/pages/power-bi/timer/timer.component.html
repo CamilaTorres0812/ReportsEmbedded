@@ -1,0 +1,31 @@
+
+<div class="flex flex-wrap align-items-center align-content-center gap-2">
+    <div class="flex items-center gap-2 border-1 border-round-lg border-300 p-2">
+        <i class="pi pi-stopwatch sm:text-sm"></i>
+        <span class="text-base font-medium sm:text-sm ">
+            {{reproduce ? message : '--:--'}}
+        </span>
+    </div>
+    <p-button  [icon]="reproduce ? 'pi pi-pause' : 'pi pi-play'" variant="outlined" [severity]="reproduce ? 'danger' : 'success'" (click)="cambiarBoton()" size="small"/>
+    <p-button
+        icon="pi pi-cog"
+        variant="outlined"
+        class="border-gray-200 text-gray-600 bg-transparent hover:bg-gray-50"
+        (click)="op.toggle($event)"
+        title="Configurar intervalo"
+        size="small"
+    ></p-button>
+    <p-popover #op>
+        <div class="flex flex-col gap-3">
+            <label for="interval-input" class="text-base font-medium">Intervalo de actualización (segundos)</label>
+            <p-inputgroup>
+                <p-inputgroup-addon>
+                    <i class="pi pi-clock"></i>
+                </p-inputgroup-addon>
+                <p-inputnumber [(ngModel)]="timerValue" [showButtons]="true" inputId="timer" [min]="120" />
+            </p-inputgroup>
+            
+        </div>
+    </p-popover> 
+</div>
+

@@ -17,6 +17,8 @@ import { PersonasService } from 'src/services/personas.service';
 import { SesionWe8Service } from 'src/services/sesion-we8.service';
 import { environment } from 'src/enviroments/enviroment';
 import Swal from 'sweetalert2';
+import { CommonModule } from '@angular/common';
+import { MessageModule } from 'primeng/message';
 
 @Component({
     selector: 'app-login',
@@ -38,7 +40,9 @@ import Swal from 'sweetalert2';
       InputGroupModule,
       InputGroupAddonModule,
       FloatLabelModule,
-      CardModule]
+      CardModule,
+      CommonModule,
+    MessageModule]
 
 })
 export class Login {
@@ -47,7 +51,7 @@ export class Login {
   public typePass: string;
   public typeTRX: number;
   public usuarioLogueadoBD: any;
-
+  invalidCredentials: boolean = false;
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -65,6 +69,7 @@ export class Login {
       TipoAuth: [this.typeTRX]
     });
   }
+  loading: boolean = false;
 
   ngOnInit(): void {
     const idKatiosUrl = this.route.snapshot.paramMap.get('idKatios');
@@ -75,14 +80,18 @@ export class Login {
   }
 
   login() {
+    this.loading = true;
     this.personasService.loginTCI(this.loginKatiosForm.value.idKatios, this.loginKatiosForm.value)
       .subscribe(res => {
         this.sessionService.setDataUserM3SinHubM3(res);
-        console.log("Respuesta del login", res);
         this.router.navigateByUrl('/admin');
         this.cargaInicial();
       }, err => {
-        Swal.fire('Error!', JSON.parse(err.error?.Message).Descripcion, 'error');
+        if(err.status === 400){
+          this.invalidCredentials = true;
+        }
+        console.error(err);
+        this.loading = false;
       });
   }
 
@@ -99,12 +108,11 @@ export class Login {
     this.personasService.loginTCIToken(idKatios, token)
       .subscribe(
         res => {
-          console.log("RESPUESTA LOGIN CON TOKEN: ", res)
           this.sessionService.setDataUserM3SinHubM3(res);
           this.router.navigateByUrl('/admin');
         },
         err => {
-          Swal.fire('Error!', JSON.parse(err.error?.Message).Descripcion, 'error');
+          console.error(err);
         }
       );
   }

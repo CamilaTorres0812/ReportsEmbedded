@@ -1,22 +1,5 @@
-<p-blockUI [blocked]="isLoading">
-    <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
-     <div
-    style="
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    "
-  >
-   <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
-  </div>
-  </div>
-</p-blockUI>
+<app-loading *ngIf="isLoading" reportType = "STI"></app-loading>
+
 
 <p-panel [showHeader]="false">
   <p-dialog [modal]="true" header="Parámetros" [(visible)]="displayValidaciones">

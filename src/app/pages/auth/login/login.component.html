@@ -2,10 +2,11 @@
     <div class="self-center mt-auto mb-auto">
         <p-card class="text-center">
             <div class="pages-header px-3 py-1 text-3xl font-bold mb-3">
-                <h2>PBIEmbedded</h2>
+                <h2>Reports Embedded</h2>
             </div>
             <span class="text-2xl font-semibold mt-2">Bienvenido</span>
-            <form class="flex flex-col gap-4 px-3 input-panel mt-3" [formGroup]="loginKatiosForm" autocomplete="off">
+            <p-message *ngIf="invalidCredentials" variant="outlined" severity="error" icon="pi pi-times-circle" styleClass="mb-2">Credenciales inválidas</p-message>
+            <form class="flex flex-col gap-4 px-3 input-panel mt-3" [formGroup]="loginKatiosForm" autocomplete="off" (ngSubmit)="login()">
                 <p-inputgroup>
                     <p-inputgroup-addon>
                         <i class="pi pi-briefcase"></i>
@@ -25,7 +26,7 @@
                     </p-floatlabel>
                 </p-inputgroup>
 
-                <p-inputgroup class="mt-3 mb-6">
+                <p-inputgroup class="mt-3 mb-3">
                     <p-inputgroup-addon>
                         <i class="pi pi-lock"></i>
                     </p-inputgroup-addon>
@@ -34,8 +35,8 @@
                         <label for="password">Contraseña</label>
                     </p-floatlabel>
                 </p-inputgroup>
+                <button pButton pRipple class="w-full" [label]="loading ? 'Entrando...' : 'Iniciar Sesión'" [disabled]="!loginKatiosForm.valid" type="submit" [raised]="true" severity="success" [loading]="loading"></button>
             </form>
-                <button pButton pRipple class="w-full mt-2 px-4" label="Iniciar Sesión" (click)="login()" [disabled]="!loginKatiosForm.valid" type="submit" [raised]="true" severity="success"></button>
         </p-card>
     </div>
 </div>

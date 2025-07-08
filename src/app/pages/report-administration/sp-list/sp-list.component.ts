@@ -34,6 +34,7 @@ export class SPListComponent implements OnInit {
           this.storedProcedures = new Array<any>(resp.RESPUESTA.Stored);
         }
         if (this.inputStored) {
+          console.log(this.inputStored)
           this.selectStoreProcedures = [];
           for (const stored of this.inputStored.split(",")) {
             const sp = this.storedProcedures.find(x => x.Nombre == stored);

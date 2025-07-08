@@ -8,15 +8,17 @@ import { CommonModule } from '@angular/common';
 import moment from 'moment';
 import { Panel } from 'primeng/panel';
 import { ValidacionesSTIComponent } from '../../validaciones/validaciones-sti/validaciones-sti.component';
-import { BlockUIModule } from 'primeng/blockui';
 import { DialogModule } from 'primeng/dialog';
+import { LoadingComponent } from '@/layout/components/loading/loading.component';
+import { MessageReportService } from 'src/services/message-report.service';
 
 @Component({
   selector: 'app-load-sti',
-  imports: [StimulsoftComponent, CommonModule, Panel, ValidacionesSTIComponent, BlockUIModule,DialogModule],
+  imports: [StimulsoftComponent, CommonModule, Panel, ValidacionesSTIComponent, DialogModule,LoadingComponent],
   standalone: true,
   templateUrl: './load-sti.component.html',
-  styleUrl: './load-sti.component.scss'
+  styleUrl: './load-sti.component.scss',
+  providers: [MessageReportService]
 })
 export class LoadSTIComponent implements OnInit{
   public dataInformacion: any;
@@ -36,7 +38,8 @@ export class LoadSTIComponent implements OnInit{
   constructor(
     private generalService: GeneralService,
     private sesionWE8: SesionWe8Service,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private messageService: MessageReportService
   ) { }
 
   ngOnInit(): void {
@@ -54,7 +57,6 @@ export class LoadSTIComponent implements OnInit{
           let params = { tdocActivo: session.TDOC, ndocActivo: session.NDOC, tiporeporte: 'BI', idreporte: id }
           this.generalService.getReportesByTipo(this.idKatios, params)
             .then(res => {
-              console.log("obtuvo reportes por tipo", res)
               this.infoReporte = res;
               this.callValidaciones(this.infoReporte);
             })
@@ -62,6 +64,7 @@ export class LoadSTIComponent implements OnInit{
               console.log(err)
             })
       } catch (error) {
+        this.messageService.error("Error","No se pudo cargar el reporte");
         console.error('An error occurred:', error);
       }
     }) 
@@ -71,9 +74,7 @@ export class LoadSTIComponent implements OnInit{
     var oXmlToJson = new XmlToJsonTF();
     if (!this.dataInformacion) {
       if (proceso.XMLATRIBUTO) {
-        console.log(proceso.XMLATRIBUTO)
         let validaciones: any = oXmlToJson.convertXmlToJson(proceso.XMLATRIBUTO);
-        console.log("VALIDACIONES", validaciones);
         if (validaciones?.VALIDACIONES?.VALIDACION?.length > 0) {
           this.jsonAtributos = validaciones.VALIDACIONES.VALIDACION;
           this.autoGenerar = validaciones?.VALIDACIONES?.AUTOGENERAR == '1' ? true : false;
@@ -90,10 +91,12 @@ export class LoadSTIComponent implements OnInit{
     if (iAtributos_sp == null) iAtributos_sp = '{ DATOS: {} }';
     this.generalService.ejectuarStoreGenerico(this.idKatios, { stored_name: this.infoReporte.STOREDNAME, attributes: iAtributos_sp, Formato: this.dataFormat })
       .then(res => {
-        console.log(res) 
         this.respOKExecSP(res)
       })
-      .catch(err => console.log(err))
+      .catch(err => {
+         this.messageService.error("No se pudo cargar el reporte",err.message);
+          console.error(err);
+        })
   }
 
   respOKExecSP(data: any) {
@@ -103,7 +106,6 @@ export class LoadSTIComponent implements OnInit{
         RESPUESTA: this.data.data
       };
     }
-    console.log("DATA REPORT: ", data)
     this.getInfoReporte();
   }
 
@@ -111,20 +113,19 @@ export class LoadSTIComponent implements OnInit{
     this.displayValidaciones = false;
     this.generalService.getTemplateReport(this.idKatios, this.infoReporte.IDREP)
       .then(res => {
-        console.log("RESPUESTA STIMULSOFT: ", res)
         this.mrt = res.CodeHTML;
         this.displayStimulsoftReport = true;
         this.isLoading = false;
         
       })
       .catch(err => {
-        console.log(err)
+        this.messageService.error("No se pudo cargar el reporte",err.message);
+        console.error(err)
         this.isLoading = false;
       })
   }
 
    crearProcesoEA(validaciones: any) {  
-    console.log("crearProcesoEA")
     this.isLoading = true;
     let atributos_sp = this.armar_atributos_sp(validaciones);
     this.ejecutarSP(atributos_sp);

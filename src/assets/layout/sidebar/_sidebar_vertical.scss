@@ -42,7 +42,39 @@
                 }
             }
 
-            > a {
+            &.has-children > a {
+                display: none;
+            }
+
+            &.no-children > a {
+                display: flex;
+                align-items: center;
+                outline: 0 none;
+                font-size: 0.857rem;
+                text-transform: uppercase;
+                color: var(--menuitem-text-color);
+                cursor: pointer;
+                padding: 1rem 1.5rem 1rem 1rem;
+                transition: background-color var(--transition-duration), box-shadow var(--transition-duration);
+
+                .layout-menuitem-icon {
+                    margin-right: 0.5rem;
+                    color: var(--menuitem-text-color);
+                }
+
+                &.active-route {
+                    font-weight: 700;
+                }
+
+                &:hover {
+                    background-color: var(--menuitem-hover-bg);
+                }
+            
+            }
+
+            
+
+            &.no-children > .layout-menuitem-root-text {
                 display: none;
             }
         }

@@ -40,11 +40,8 @@ export class ValidacionesSTIComponent {
   constructor() { }
 
   ngOnInit(): void {
-    console.log("Validaciones de input: ",this.validaciones)
-    console.log(this.autoGenerar)
     try {
       this.clasificacionxperfil = JSON.parse(localStorage.getItem("CLASIXPERF" + this.IDKatios) || '{}');
-      console.log("clasificacion x perfil", this.clasificacionxperfil)
       this.traerComboPerfil();
     }
     catch (e) {

@@ -1,31 +1,45 @@
-<p-blockUI [blocked]="isLoading">
-    <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
-     <div
-    style="
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    "
-  >
-   <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
+<app-loading *ngIf="isLoading" reportType = "PBI"></app-loading>
+<p-panel [toggleable]="true" [collapsed]="true" *ngIf="reportObj">
+  <ng-template #header>
+    <span class="font-semibold text-sm md:text-lg">{{reportInfo.Descripcion}}</span>
+  </ng-template>
+  <div class="flex items-center justify-content-between flex-row-reverse">
+    <div class="flex items-center">
+      <p-selectbutton  (onChange)="changeView($event)" [options]="views" [(ngModel)]="view" optionLabel="view" [disabled]="!isMobile || !hasMobileView" [pTooltip]="tooltip" tooltipPosition="bottom">
+          <ng-template #item let-item>
+                <i [class]="item.icon"></i>
+            </ng-template>
+        </p-selectbutton>
+      
+        <ng-template  #tooltip>
+          <div class="flex items-start gap-1">
+            <i class="pi pi-exclamation-circle" style="font-size: 1.5rem"></i>
+            <span> {{isMobile && !hasMobileView ? 'Este informe no dispone de una versión adaptada a móviles.' : 'La vista para móviles solo puede visualizarse desde un dispositivo móvil.'}} </span>
+          </div>
+      </ng-template>
+    </div>
+    <app-timer (changeState) = "changeState($event)"></app-timer>
   </div>
-  </div>
-</p-blockUI>
+</p-panel>
 
-<div >
-  <div *ngIf="isEmbedded">
-    <powerbi-report 
+
+<div *ngIf="!isLoading">
+    <powerbi-report
       [embedConfig]="reportConfig"
       [cssClassName]="reportClass"
-      [phasedEmbedding]="phasedEmbeddingFlag"
+      [phasedEmbedding]="false"
       [eventHandlers]="eventHandlersMap"
       >
     </powerbi-report>
-  </div>
+    <p-tabs *ngIf = "pages.length > 0" [value]="activeTabIndex" (valueChange)="onTabChanged($event)" scrollable>
+    <p-tablist>
+        @for (page of pages; track $index) {
+            <p-tab [value]="$index">
+              <i class="pi pi-chart-line"></i>
+              <span>{{ page.displayName }}</span>
+            </p-tab>
+        }
+    </p-tablist>
+</p-tabs>
 </div>
+

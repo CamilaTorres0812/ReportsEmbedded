@@ -81,6 +81,7 @@ export class GeneralService {
     }
 
     async ejectuarStoreGenerico(idkatios: string, params: any) {
+      console.log(params)
     return this.http.get(`${API}General/ejecutar_stored_generico/${idkatios}`, { params })
       .toPromise()
     }

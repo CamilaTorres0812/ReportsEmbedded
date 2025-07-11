@@ -5,7 +5,6 @@ import { filter, Subscription } from 'rxjs';
 import { AppFooter } from './app.footer';
 import { LayoutService } from '@/layout/service/layout.service';
 import { AppConfigurator } from './app.configurator';
-import { AppBreadcrumb } from './app.breadcrumb';
 import { AppRightMenu } from '@/layout/components/app.rightmenu';
 import { Toast, ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
@@ -16,7 +15,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 @Component({
     selector: 'app-layout',
     standalone: true,
-    imports: [CommonModule, TopbarComponent, SidebarComponent, RouterModule, AppFooter, AppConfigurator, AppBreadcrumb, AppRightMenu, ToastModule],
+    imports: [CommonModule, TopbarComponent, SidebarComponent, RouterModule, AppFooter, AppConfigurator, AppRightMenu, ToastModule],
     template: `
         <div class="layout-container" [ngClass]="containerClass()">
             <div app-topbar></div>

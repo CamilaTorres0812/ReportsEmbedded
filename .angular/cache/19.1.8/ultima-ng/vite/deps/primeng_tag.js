@@ -1,14 +1,16 @@
 import {
   BaseComponent
-} from "./chunk-RGYTS7VC.js";
+} from "./chunk-GKZ43EY4.js";
 import {
   BaseStyle
-} from "./chunk-XDH45VA6.js";
+} from "./chunk-M7RTXOC4.js";
 import {
   PrimeTemplate,
   SharedModule
-} from "./chunk-VS4LFPIK.js";
+} from "./chunk-EZMDTDGM.js";
 import "./chunk-7T4SVPTQ.js";
+import "./chunk-CWYBPNCF.js";
+import "./chunk-NJ25EVEJ.js";
 import {
   CommonModule,
   NgClass,
@@ -56,8 +58,6 @@ import {
 import "./chunk-WPM5VTLQ.js";
 import "./chunk-PEBH6BBU.js";
 import "./chunk-4S3KYZTJ.js";
-import "./chunk-CWYBPNCF.js";
-import "./chunk-NJ25EVEJ.js";
 import "./chunk-GZBIO5IJ.js";
 
 // node_modules/primeng/fesm2022/primeng-tag.mjs

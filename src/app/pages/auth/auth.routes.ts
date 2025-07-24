@@ -1,4 +1,5 @@
 import {Routes} from '@angular/router';
+import { tokenGuard } from 'src/guards/token.guard';
 
 export default [
     { path: 'error', loadComponent: () => import('./error').then((c) => c.Error) },
@@ -11,6 +12,6 @@ export default [
     { path: 'newpassword', loadComponent: () => import('./newpassword').then((c) => c.NewPassword) },
     { path: 'verification', loadComponent: () => import('./verification').then((c) => c.Verification) },
     { path: 'lockscreen', loadComponent: () => import('./lockscreen').then((c) => c.LockScreen) },
-    { path: 'loginKatios/:idKatios/:token', loadComponent: () => import('./login/login').then((c) => c.Login) },
+    { path: 'loginKatios/:idKatios/:token', loadComponent: () => import('./login/login').then((c) => c.Login), canActivate: [tokenGuard] },
     { path: '**', redirectTo: '/notfound' }
 ] as Routes;

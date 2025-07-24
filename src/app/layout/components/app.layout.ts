@@ -1,4 +1,4 @@
-import { Component, computed, OnDestroy, Renderer2, ViewChild } from '@angular/core';
+import { Component, computed, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
@@ -17,10 +17,10 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     standalone: true,
     imports: [CommonModule, TopbarComponent, SidebarComponent, RouterModule, AppFooter, AppConfigurator, AppRightMenu, ToastModule],
     template: `
-        <div class="layout-container" [ngClass]="containerClass()">
-            <div app-topbar></div>
-            <div app-sidebar></div>
-            <div class="layout-content-wrapper">
+        <div [ngClass]="containerClass()">
+            <div *ngIf="showVisuals" app-topbar></div>
+            <div *ngIf="showVisuals" app-sidebar></div>
+            <div [ngClass]="showVisuals ? 'layout-content-wrapper' : ''">
             <router-outlet></router-outlet>
             </div>
         </div>
@@ -28,7 +28,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     `,
     providers: [MessageService]
 })
-export class AppLayout implements OnDestroy {
+export class AppLayout implements OnDestroy, OnInit {
     overlayMenuOpenSubscription: Subscription;
 
     menuOutsideClickListener: any;
@@ -39,6 +39,7 @@ export class AppLayout implements OnDestroy {
 
     @ViewChild(TopbarComponent) appTopbar!: TopbarComponent;
 
+    showVisuals: boolean = true;
     constructor(
         public layoutService: LayoutService,
         public renderer: Renderer2,
@@ -74,6 +75,18 @@ export class AppLayout implements OnDestroy {
 
         this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
             this.hideMenu();
+        });
+    }
+    ngOnInit(): void {
+        this.hideVisuals();
+    }
+
+    hideVisuals(){
+        this.router.events.subscribe(() => {
+            const url = this.router.url;
+            const isReportWithToken = /\/PBI\/[^/]+\/[^/]+\/[^/]+$/.test(url) || /\/STI\/[^/]+\/[^/]+\/[^/]+$/.test(url);
+            const isTokenAuth = sessionStorage.getItem(('authType')) === 'token';
+            this.showVisuals = !(isReportWithToken && isTokenAuth);
         });
     }
 
@@ -114,6 +127,7 @@ export class AppLayout implements OnDestroy {
         const layoutState = this.layoutService.layoutState();
 
         return {
+            'layout-container': this.showVisuals,
             'layout-overlay': layoutConfig.menuMode === 'overlay',
             'layout-static': layoutConfig.menuMode === 'static',
             'layout-slim': layoutConfig.menuMode === 'slim',
@@ -131,7 +145,7 @@ export class AppLayout implements OnDestroy {
             'layout-sidebar-anchored': layoutState.anchored,
             [`layout-topbar-${layoutConfig.topbarTheme}`]: true,
             [`layout-menu-${layoutConfig.menuTheme}`]: true,
-            [`layout-menu-profile-${layoutConfig.menuProfilePosition}`]: true
+            [`layout-menu-profile-${layoutConfig.menuProfilePosition}`]: true        
         };
     });
 

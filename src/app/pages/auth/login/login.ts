@@ -19,6 +19,7 @@ import { LoadingComponent } from '@/layout/components/loading/loading.component'
 import { MessageReportService } from 'src/services/message-report.service';
 import { MessageService } from 'primeng/api';
 import { LoadingLoginComponent } from '@/layout/components/loading-login/loading-login.component';
+import { AuthService } from 'src/services/auth.service';
 
 @Component({
     selector: 'app-login',
@@ -57,7 +58,8 @@ export class Login {
     private personasService: PersonasService,
     private sessionService: SesionWe8Service,
     private route: ActivatedRoute,
-    private messageService: MessageReportService
+    private messageService: MessageReportService,
+    private authService: AuthService
   ) {
     this.typeTRX = 1;
     this.showPass = false;
@@ -72,14 +74,11 @@ export class Login {
   loading: boolean = false;
   loadingWithToken: boolean = false;
   ngOnInit(): void {
-    const idKatiosUrl = this.route.snapshot.paramMap.get('idKatios');
-    const tokenUrl = this.route.snapshot.paramMap.get('token');
-    if(idKatiosUrl && tokenUrl){
+    if(sessionStorage.getItem(('authType')) === 'token'){
       this.loadingWithToken = true;
-      this.loginWithToken(idKatiosUrl,tokenUrl);
-    } 
+      this.router.navigate(['/admin']);
+    }
   }
-
   login() {
     this.loading = true;
     this.personasService.loginTCI(this.loginKatiosForm.value.idKatios, this.loginKatiosForm.value)
@@ -96,21 +95,5 @@ export class Login {
         console.error(err);
         this.loading = false;
       });
-  }
-
-  loginWithToken(idKatios: string, token: string){
-    this.personasService.loginTCIToken(idKatios, token)
-      .subscribe(
-        res => {
-          this.sessionService.setDataUserM3SinHubM3(res);
-          sessionStorage.setItem('authType', 'token');
-          this.router.navigateByUrl('/admin');
-        },
-        err => {
-          this.loadingWithToken = false;
-          this.messageService.error("Error","No se pudo iniciar sesión")
-          console.error(err);
-        }
-      );
   }
 }

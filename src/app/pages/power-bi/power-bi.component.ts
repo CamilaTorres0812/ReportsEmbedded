@@ -116,9 +116,6 @@ export class PowerBIComponent implements OnInit, OnDestroy {
      private activatedRoute: ActivatedRoute, private timerService: TimerService,private messageService: MessageReportService
   ) {}
 
-  
-
-
 ngOnDestroy(): void {
   if (this.tokenCheckInterval) {
     clearInterval(this.tokenCheckInterval);

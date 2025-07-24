@@ -1,4 +1,7 @@
 import {
+  Checkbox
+} from "./chunk-IDRDX4FO.js";
+import {
   IconField
 } from "./chunk-PWHNPVHB.js";
 import {
@@ -13,9 +16,6 @@ import {
 import {
   Ripple
 } from "./chunk-WLX3PXM2.js";
-import {
-  Checkbox
-} from "./chunk-4IP4YWZ5.js";
 import {
   ChevronDownIcon,
   ChevronRightIcon,

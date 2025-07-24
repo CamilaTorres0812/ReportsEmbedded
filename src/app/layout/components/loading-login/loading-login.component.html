@@ -1,0 +1,32 @@
+<p-blockUI [blocked]="true">
+    <div class="h-full w-full flex justify-content-center align-items-center bg-gradient-to-br from-primary-50 to-surface-100">
+        <div class="w-full max-w-30rem px-4">
+            <p-card styleClass="border-none shadow-7 bg-surface-0 opacity-95">
+                <ng-template pTemplate="content">
+                    <div class="text-center flex flex-column gap-4">
+                        <div class="flex justify-content-center">
+                            <div class="h-4rem w-4rem border-circle bg-primary-100 flex align-items-center justify-content-center">
+                                <i class="pi pi-chart-bar text-3xl text-primary-600"></i>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h1 class="text-2xl font-bold text-900">Reports Embedded</h1>
+                            <p class="text-sm text-600">Plataforma de Visualización de Datos</p>
+                        </div>
+
+                        <div class="flex flex-column gap-2 align-items-center">
+                            <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+                            <p class="text-sm font-medium text-800">Validando credenciales...</p>
+                            <p class="text-xs text-600">Verificando acceso</p>
+                        </div>
+
+                        <div class="pt-3 border-top-1 border-gray-200">
+                            <p class="text-xs text-600">Conectando de forma segura...</p>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-card>
+        </div>
+    </div>
+</p-blockUI>

@@ -64,6 +64,7 @@ export class MenuItemComponent implements OnInit{
     get activeClass() {
         return this.active;
     }
+   
 
     active = false;
 

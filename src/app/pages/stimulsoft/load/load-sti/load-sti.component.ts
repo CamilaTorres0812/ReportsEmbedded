@@ -61,7 +61,8 @@ export class LoadSTIComponent implements OnInit{
               this.callValidaciones(this.infoReporte);
             })
             .catch(err => {
-              console.log(err)
+              this.messageService.error("Error","No se pudo cargar el reporte");
+              console.error(err)
             })
       } catch (error) {
         this.messageService.error("Error","No se pudo cargar el reporte");
@@ -91,7 +92,8 @@ export class LoadSTIComponent implements OnInit{
     if (iAtributos_sp == null) iAtributos_sp = '{ DATOS: {} }';
     this.generalService.ejectuarStoreGenerico(this.idKatios, { stored_name: this.infoReporte.STOREDNAME, attributes: iAtributos_sp, Formato: this.dataFormat })
       .then(res => {
-        this.respOKExecSP(res)
+        console.log("RESPUESTA: ",res)
+        this.respOKExecSP(res);
       })
       .catch(err => {
          this.messageService.error("No se pudo cargar el reporte",err.message);

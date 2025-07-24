@@ -1,5 +1,6 @@
 <div class="min-h-screen flex flex-col bg-cover" [style]="{ backgroundImage: 'url(./images/pages/login-bg.jpg)' }">
-    <div class="self-center mt-auto mb-auto">
+    <app-loading-login *ngIf = "loadingWithToken"></app-loading-login>
+    <div *ngIf = "!loadingWithToken" class="self-center mt-auto mb-auto">
         <p-card class="text-center">
             <div class="pages-header px-3 py-1 text-3xl font-bold mb-3">
                 <h2>Reports Embedded</h2>

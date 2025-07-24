@@ -1,11 +1,9 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Embed, IReportEmbedConfiguration, service } from 'powerbi-client';
 import * as powerbi from 'powerbi-client';
 import { PowerBIEmbedModule, PowerBIReportEmbedComponent } from 'powerbi-client-angular';
-import { IHttpPostMessageResponse } from 'http-post-message';
 import 'powerbi-report-authoring';
-import { Subscription } from 'rxjs';
 import { PbiService } from 'src/services/pbi.service';
 import { SesionWe8Service } from 'src/services/sesion-we8.service';
 import { GeneralService } from 'src/services/general.service';
@@ -20,7 +18,6 @@ import { PanelModule } from 'primeng/panel';
 import { TimerComponent } from './timer/timer.component';
 import { Tooltip } from 'primeng/tooltip';
 import { MessageReportService } from 'src/services/message-report.service';
-import { SelectModule } from 'primeng/select';
 import { SelectButton } from 'primeng/selectbutton';
 
 
@@ -110,7 +107,7 @@ export class PowerBIComponent implements OnInit, OnDestroy {
         let index = this.pages.findIndex(p => p.name === page.name);
         this.activeTabIndex = index < 0 ? 0 : index;
     }
-       ],
+       ]
   ]) as Map<string, (event?: service.ICustomEvent<any>, embeddedEntity?: Embed) => void | null>;
 
 
@@ -139,6 +136,11 @@ ngOnDestroy(): void {
     this.timerService.refreshState$.subscribe(({ isPaused, interval }) => {
       this.refreshReport(isPaused, interval);
     });
+    document.addEventListener("visibilitychange", () => {​​​​
+      if (!document.hidden) {​​​​
+          this.checkTokenAndUpdate()
+      }​​​​
+    }​​​​);
   }
   
 
@@ -202,16 +204,23 @@ ngOnDestroy(): void {
     })
   }
   
- 
 
   getJwtExpiration(token: string)  {
-
     const payloadBase64 = token.split('.')[1]; 
     const decodedPayload = JSON.parse(atob(payloadBase64)); 
     const expSeconds = decodedPayload.exp; 
-
     this.expDate = new Date(expSeconds * 1000); 
     this.refreshToken();
+  }
+
+  checkTokenAndUpdate(){
+    const currentTime = Date.now();
+    const timeUntilExpiration = this.expDate.getTime() - currentTime;
+    const timeToUpdate = this.MINUTES_BEFORE_EXPIRATION * 60 * 1000;
+    console.log("EXPIRACION: ",this.expDate,currentTime)
+    if (timeUntilExpiration <= timeToUpdate) {
+      this.loadToken();
+    }
   }
 
   refreshToken(): void {
@@ -219,15 +228,8 @@ ngOnDestroy(): void {
       clearInterval(this.tokenCheckInterval);
       this.tokenCheckInterval = undefined;
     }
-    this.tokenCheckInterval = setInterval(() => {
-      const currentTime = Date.now();
-      const timeUntilExpiration = this.expDate.getTime() - currentTime;
-      const timeToUpdate = this.MINUTES_BEFORE_EXPIRATION * 60 * 1000;
-      if (timeUntilExpiration <= timeToUpdate) {
-        this.loadToken();
-      }
-    }, this.INTERVAL_TIME);
-}
+    this.tokenCheckInterval = setInterval(() => this.checkTokenAndUpdate(), this.INTERVAL_TIME);
+  }
 
 
   validateRole(): Promise<void> {
@@ -260,8 +262,10 @@ ngOnDestroy(): void {
     this.pbiService.generateToken(this.datasetWorkspaceId, this.embedReportId, jparams).subscribe({
       next: (token) => {
         this.accessToken = token;
+        this.reportObj?.setAccessToken(this.accessToken);
         this.getJwtExpiration(this.accessToken);
         resolve();
+        return this.accessToken;
       },
       error: (error) =>{
           this.messageService.error("Error","Error al obtener reporte");
@@ -302,8 +306,6 @@ ngOnDestroy(): void {
         layoutType: this.isMobile ? models.LayoutType.MobileLandscape : models.LayoutType.Custom
       }
     };
-    
-     
    
   }
 
